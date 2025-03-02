@@ -1,4 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  BeforeInsert,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 import bcrypt from 'bcrypt';
 import { saltOrRounds } from './constants';
 
@@ -16,19 +24,24 @@ export class User {
   @Column({ length: 50 })
   password: string;
 
-  @Column({
+  @CreateDateColumn({
     name: 'create_time',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createTime: Date;
 
-  @Column({
+  @UpdateDateColumn({
     name: 'update_time',
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP',
   })
   updateTime: Date;
+
+  @DeleteDateColumn({
+    name: 'delete_at',
+  })
+  deletedAt: Date;
 
   @BeforeInsert()
   async encryptPwd() {
