@@ -1,1 +1,10 @@
-export type CreateUserDto = { username: string; password: string; nickname: string };
+import { IsNotEmpty } from 'class-validator';
+
+export class CreateUserDto {
+  @IsNotEmpty()
+  username: string;
+  @IsNotEmpty()
+  password: string;
+  @IsNotEmpty()
+  nickname: string;
+}

@@ -3,6 +3,7 @@ import { AppModule } from './app/app.module';
 import helmet from 'helmet';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from './config/type';
+import { ValidationPipe } from '@nestjs/common';
 
 declare const module: any;
 
@@ -22,6 +23,7 @@ async function bootstrap() {
       },
     })
   );
+  app.useGlobalPipes(new ValidationPipe());
 
   const configService: ConfigService<EnvironmentVariables, true> = app.get(ConfigService);
   const port = configService.get('PORT');
