@@ -21,7 +21,7 @@ export class UserService {
     return user;
   }
 
-  async register(dto: CreateUserDto): Promise<User> {
+  async add(dto: CreateUserDto): Promise<User> {
     const user = this.userRepo.create([dto]);
     const newUsers = await this.userRepo.save(user);
     return newUsers[0];

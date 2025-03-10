@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { saltOrRounds } from './constants';
 
 @Entity()
@@ -21,7 +21,7 @@ export class User {
   @Column()
   nickname: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 60 })
   password: string;
 
   @CreateDateColumn({
@@ -45,6 +45,8 @@ export class User {
 
   @BeforeInsert()
   async encryptPwd() {
-    this.password = await bcrypt.hash(this.password, saltOrRounds);
+    const password = await bcrypt.hash(this.password, saltOrRounds);
+    console.log(password);
+    this.password = password;
   }
 }

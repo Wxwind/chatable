@@ -4,19 +4,22 @@ import { AppService } from './app.service';
 import { AIModule } from '../ai/ai.module';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EnvironmentVariables } from '@/config/type';
 import { User } from '@/user/user.entity';
-import { ClsModule } from 'nestjs-cls';
+import { ClsModule, ClsService } from 'nestjs-cls';
 import { v4 as uuid } from 'uuid';
 import { Request } from 'express';
 import { WinstonModule } from 'nest-winston';
 import { format, transports } from 'winston';
 import 'winston-daily-rotate-file';
-import { LoggerMiddleware } from '@/middleware/logger.middleware';
+import { LoggerMiddleware } from '@/common/middleware/logger.middleware';
+import { HttpExceptionFilter } from '@/common/filter/httpException.filter';
+import { ApiExceptionFilter } from '@/common/filter/apiException.filter';
+import { GlobalExceptionsFilter } from '@/common/filter/globalException.filter';
 
 @Module({
   imports: [
@@ -34,9 +37,16 @@ import { LoggerMiddleware } from '@/middleware/logger.middleware';
       },
     }),
     WinstonModule.forRootAsync({
-      useFactory() {
-        const myFormat = format.printf(({ level, message, context, timestamp }) => {
-          return `[${timestamp}] ${level} [${context}]: ${message}`;
+      imports: [ClsModule],
+      inject: [ClsService],
+      useFactory(clsService: ClsService) {
+        const myFormat = format.printf((info) => {
+          const { level, message, context, timestamp } = info;
+          let msg = `[${timestamp}] ${level} [${context}] <${clsService.getId()}>: ${message}`;
+          if (info.stack) {
+            msg += `\n${info.stack as string}`;
+          }
+          return msg;
         });
 
         return {
@@ -103,6 +113,18 @@ import { LoggerMiddleware } from '@/middleware/logger.middleware';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionsFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ApiExceptionFilter,
     },
   ],
 })
