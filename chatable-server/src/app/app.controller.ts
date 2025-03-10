@@ -14,6 +14,7 @@ export class AppController {
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   login(@Request() req: EXRequest & { user: UserForAuth }): Promise<LoginVo> {
+    // user 属性是LocalStrategy validate的返回值
     return this.authService.login(req.user);
   }
 
