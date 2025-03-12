@@ -4,8 +4,7 @@ import { AppService } from './app.service';
 import { AIModule } from '../ai/ai.module';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EnvironmentVariables } from '@/config/type';
@@ -16,10 +15,11 @@ import { Request } from 'express';
 import { WinstonModule } from 'nest-winston';
 import { format, transports } from 'winston';
 import 'winston-daily-rotate-file';
-import { LoggerMiddleware } from '@/common/middleware/logger.middleware';
 import { HttpExceptionFilter } from '@/common/filter/httpException.filter';
 import { ApiExceptionFilter } from '@/common/filter/apiException.filter';
 import { GlobalExceptionsFilter } from '@/common/filter/globalException.filter';
+import { GlobalResponseInterceptor } from '@/common/interceptor/globalResponse.interceptor';
+import { RequestLoggerInterceptor } from '@/common/interceptor/requestLogger.interceptor';
 
 @Module({
   imports: [
@@ -111,8 +111,12 @@ import { GlobalExceptionsFilter } from '@/common/filter/globalException.filter';
   providers: [
     AppService,
     {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
+      provide: APP_INTERCEPTOR,
+      useClass: GlobalResponseInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: RequestLoggerInterceptor,
     },
     {
       provide: APP_FILTER,
@@ -129,7 +133,5 @@ import { GlobalExceptionsFilter } from '@/common/filter/globalException.filter';
   ],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
-  }
+  configure(consumer: MiddlewareConsumer) {}
 }

@@ -46,7 +46,6 @@ export class User {
   @BeforeInsert()
   async encryptPwd() {
     const password = await bcrypt.hash(this.password, saltOrRounds);
-    console.log(password);
     this.password = password;
   }
 }

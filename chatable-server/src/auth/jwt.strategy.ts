@@ -1,4 +1,4 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ExtractJwt, Strategy, VerifiedCallback } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { jwtConstants } from './constants';
@@ -16,7 +16,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // 返回值将会附加到user对象上
   // 也可以返回一个数组，其中第一个值用于创建 user 对象，第二个值用于创建 authInfo 对象
-  override async validate(payload: JwtPayLoad) {
+  override async validate(payload: JwtPayLoad, done: VerifiedCallback) {
+    console.log('done', done);
     return { userId: payload.userId, username: payload.username };
   }
 }

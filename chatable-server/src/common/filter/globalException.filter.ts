@@ -16,7 +16,6 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
       code: status,
       msg: exception.message,
     };
-    console.log('global', exception.name);
     this.logger.error(exception);
     response.status(status).json(body);
   }

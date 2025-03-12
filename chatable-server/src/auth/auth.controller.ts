@@ -1,12 +1,13 @@
 import { LoginVo } from '@/app/vo';
-import { Public } from '@/decorator';
 import { UserForAuth } from '@/user/type';
-import { Controller, Post, UseGuards, Request, Get, Body } from '@nestjs/common';
-import { LocalAuthGuard } from './local-auth.guard';
+import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException } from '@nestjs/common';
 import { Request as EXRequest } from 'express';
 import { AuthService } from './auth.service';
 import { UserService } from '@/user/user.service';
-import { CreateUserDto } from '@/user/dto';
+import { CreateUserDto } from '@/user/user.dto';
+import { CreateUserVo } from '@/user/user.vo';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { LoginDto } from '@/app/dto';
 
 @Controller('auth')
 export class AuthController {
@@ -15,20 +16,23 @@ export class AuthController {
     private userService: UserService
   ) {}
 
-  @Public()
-  @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Request() req: EXRequest & { user: UserForAuth }): Promise<LoginVo> {
-    // user 属性是LocalStrategy validate的返回值
-    return this.authService.login(req.user);
+  async login(@Body() loginDto: LoginDto): Promise<LoginVo> {
+    const user = await this.authService.validateUser(loginDto.username, loginDto.password);
+    if (!user) {
+      throw new UnauthorizedException('username or password incorrect');
+    }
+
+    return this.authService.login(user);
   }
 
-  @Public()
   @Post('register')
-  async register(@Body() body: CreateUserDto) {
-    return this.userService.add(body);
+  async register(@Body() body: CreateUserDto): Promise<CreateUserVo> {
+    const { password, deletedAt, ...user } = await this.userService.add(body);
+    return user;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req: EXRequest & { user: UserForAuth }) {
     return req.user;
