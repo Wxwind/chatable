@@ -20,6 +20,9 @@ import { ApiExceptionFilter } from '@/common/filter/apiException.filter';
 import { GlobalExceptionsFilter } from '@/common/filter/globalException.filter';
 import { GlobalResponseInterceptor } from '@/common/interceptor/globalResponse.interceptor';
 import { RequestLoggerInterceptor } from '@/common/interceptor/requestLogger.interceptor';
+import { AIChatMessageController } from './ai-chat-message/ai-chat-message.controller';
+import { AIChatSessionController } from './ai-chat-session/ai-chat-session.controller';
+import { AIChatSessionModule } from './ai-chat-session/ai-chat-session.module';
 
 @Module({
   imports: [
@@ -102,8 +105,9 @@ import { RequestLoggerInterceptor } from '@/common/interceptor/requestLogger.int
     AIModule,
     AuthModule,
     UserModule,
+    AIChatSessionModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, AIChatMessageController, AIChatSessionController],
   providers: [
     AppService,
     {

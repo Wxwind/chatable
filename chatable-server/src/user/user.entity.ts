@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { saltOrRounds } from './constants';
+import { AIChatSession } from '@/ai-chat-session/ai-chat-session.entity';
 
 @Entity()
 export class User {
@@ -34,6 +35,9 @@ export class User {
     name: 'delete_at',
   })
   deletedAt: Date;
+
+  @OneToMany(() => AIChatSession, (session) => session.user)
+  aiChatSessions: AIChatSession[];
 
   @BeforeInsert()
   async encryptPwd() {

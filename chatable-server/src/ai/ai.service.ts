@@ -15,7 +15,7 @@ export class AIService {
   }
 
   async chat(userId: string, sessionId: string, message: string) {
-    const messages: any[] = [];
+    const messages: ChatCompletionMessageParam[] = [];
     const chatCompletion = await this.client.chat.completions.create({
       messages,
       model: 'gpt-4o',
