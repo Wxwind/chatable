@@ -1,9 +1,9 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AIModule } from '../ai/ai.module';
-import { AuthModule } from '../auth/auth.module';
-import { UserModule } from '../user/user.module';
+import { AIModule } from './ai/ai.module';
+import { AuthModule } from './auth/auth.module';
+import { UserModule } from './user/user.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -50,11 +50,7 @@ import { RequestLoggerInterceptor } from '@/common/interceptor/requestLogger.int
         });
 
         return {
-          format: format.combine(
-            format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-            myFormat,
-            format.colorize({ all: true })
-          ),
+          format: format.combine(format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), myFormat, format.colorize({ all: true })),
           transports: [
             new transports.Console(),
             new transports.DailyRotateFile({

@@ -1,4 +1,4 @@
-import { LoginVo } from '@/app/vo';
+import { LoginVo } from '@/auth/vo';
 import { UserForAuth } from '@/user/type';
 import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException } from '@nestjs/common';
 import { Request as EXRequest } from 'express';
@@ -7,7 +7,7 @@ import { UserService } from '@/user/user.service';
 import { CreateUserDto } from '@/user/user.dto';
 import { CreateUserVo } from '@/user/user.vo';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { LoginDto } from '@/app/dto';
+import { LoginDto } from '@/auth/dto';
 
 @Controller('auth')
 export class AuthController {
