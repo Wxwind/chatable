@@ -8,7 +8,7 @@ export class GlobalResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const resp: ResponseInfo = {
-          code: 200,
+          code: 0,
           msg: '',
           data,
         };

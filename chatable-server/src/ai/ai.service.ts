@@ -11,6 +11,7 @@ export class AIService {
   constructor(private configService: ConfigService<EnvironmentVariables, true>) {
     this.client = new OpenAI({
       apiKey: configService.get('OPEN_API_KEY', { infer: true }),
+      baseURL: configService.get('OPENAI_BASE_URL', { infer: true }),
     });
   }
 

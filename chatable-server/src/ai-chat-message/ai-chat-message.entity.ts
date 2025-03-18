@@ -10,6 +10,9 @@ export class AIChatMessage {
   aiChatSession: AIChatSession;
 
   @Column()
+  sender: 'user' | 'ai' | 'system';
+
+  @Column()
   message: string;
 
   @CreateDateColumn({

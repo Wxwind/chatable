@@ -9,4 +9,5 @@ export interface EnvironmentVariables {
   DB_SYNC: boolean;
 
   OPEN_API_KEY: string;
+  OPENAI_BASE_URL: string;
 }

@@ -1,13 +1,13 @@
 import { LoginVo } from '@/auth/vo';
-import { UserForAuth } from '@/user/type';
+
 import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException } from '@nestjs/common';
-import { Request as EXRequest } from 'express';
 import { AuthService } from './auth.service';
 import { UserService } from '@/user/user.service';
 import { CreateUserDto } from '@/user/user.dto';
 import { CreateUserVo } from '@/user/user.vo';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDto } from '@/auth/dto';
+import { RequestWithAuth } from './type';
 
 @Controller('auth')
 export class AuthController {
@@ -28,13 +28,13 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() body: CreateUserDto): Promise<CreateUserVo> {
-    const { password, deletedAt, ...user } = await this.userService.add(body);
+    const { password, deletedAt, ...user } = await this.userService.saveUser(body);
     return user;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req: EXRequest & { user: UserForAuth }) {
+  getProfile(@Request() req: RequestWithAuth) {
     return req.user;
   }
 }

@@ -23,6 +23,7 @@ import { RequestLoggerInterceptor } from '@/common/interceptor/requestLogger.int
 import { AIChatMessageController } from './ai-chat-message/ai-chat-message.controller';
 import { AIChatSessionController } from './ai-chat-session/ai-chat-session.controller';
 import { AIChatSessionModule } from './ai-chat-session/ai-chat-session.module';
+import { UsersssModule } from './usersss/usersss.module';
 
 @Module({
   imports: [
@@ -106,6 +107,7 @@ import { AIChatSessionModule } from './ai-chat-session/ai-chat-session.module';
     AuthModule,
     UserModule,
     AIChatSessionModule,
+    UsersssModule,
   ],
   controllers: [AppController, AIChatMessageController, AIChatSessionController],
   providers: [

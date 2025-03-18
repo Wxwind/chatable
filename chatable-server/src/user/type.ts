@@ -7,5 +7,3 @@ export type UserBO = {
   updateTime: Date;
   deletedAt: Date | null;
 };
-
-export type UserForAuth = Omit<UserBO, 'password'>;
