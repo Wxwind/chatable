@@ -1,3 +1,4 @@
 export enum ErrorCode {
   USER_NOT_FOUND = 10001,
+  USERNAME_ALREADY_EXISTS = 10002,
 }

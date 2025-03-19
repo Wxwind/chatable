@@ -1,7 +1,8 @@
 import { AIChatMessage } from '@/ai-chat-message/ai-chat-message.entity';
 import { User } from '@/user/user.entity';
-import { PrimaryGeneratedColumn, JoinColumn, Column, CreateDateColumn, DeleteDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { PrimaryGeneratedColumn, JoinColumn, Column, CreateDateColumn, DeleteDateColumn, ManyToOne, OneToMany, Entity } from 'typeorm';
 
+@Entity()
 export class AIChatSession {
   @PrimaryGeneratedColumn()
   id: number;

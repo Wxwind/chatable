@@ -5,11 +5,24 @@ import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from './config/type';
 import { ValidationPipe } from '@nestjs/common';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+    .setTitle('Chatable')
+    .setDescription('The chatable API description')
+    .setVersion('1.0')
+    .addTag('chatable')
+    .addBearerAuth()
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory, {
+    jsonDocumentUrl: 'api/json',
+  });
 
   app.use(
     helmet({
@@ -29,6 +42,16 @@ async function bootstrap() {
 
   const configService: ConfigService<EnvironmentVariables, true> = app.get(ConfigService);
   const port = configService.get<string>('PORT');
+  const allowed_origins = configService.get<string>('ALLOWED_ORIGINS');
+
+  if (allowed_origins) {
+    app.enableCors({
+      origin: allowed_origins.split(','),
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      credentials: true,
+    });
+  }
+
   await app.listen(port ?? 3000);
 
   if (module.hot) {

@@ -1,13 +1,14 @@
-import { LoginVo } from '@/auth/vo';
+import { LoginVo } from '@/auth/vo/login.vo';
 
 import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '@/user/user.service';
-import { CreateUserDto } from '@/user/user.dto';
-import { CreateUserVo } from '@/user/user.vo';
+import { CreateUserDto } from '@/user/dto/create-user.dto';
+import { CreateUserVo } from '@/user/vo/create-user.vo';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { LoginDto } from '@/auth/dto';
+import { LoginDto } from '@/auth/dto/login.dto';
 import { RequestWithAuth } from './type';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -34,6 +35,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
+  @ApiBearerAuth()
   getProfile(@Request() req: RequestWithAuth) {
     return req.user;
   }

@@ -1,6 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { saltOrRounds } from './constants';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany } from 'typeorm';
 import { AIChatSession } from '@/ai-chat-session/ai-chat-session.entity';
 
 @Entity()
@@ -38,10 +36,4 @@ export class User {
 
   @OneToMany(() => AIChatSession, (session) => session.user)
   aiChatSessions: AIChatSession[];
-
-  @BeforeInsert()
-  async encryptPwd() {
-    const password = await bcrypt.hash(this.password, saltOrRounds);
-    this.password = password;
-  }
 }

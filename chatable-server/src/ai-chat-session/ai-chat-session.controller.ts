@@ -3,9 +3,11 @@ import { AIChatSessionService } from './ai-chat-session.service';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { CreateSessionDto } from './dto/create-session-dto';
 import { RequestWithAuth } from '@/auth/type';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('ai-chat-session')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class AIChatSessionController {
   constructor(private aiChatSessionService: AIChatSessionService) {}
 

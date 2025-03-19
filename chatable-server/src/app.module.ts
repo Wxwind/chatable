@@ -8,7 +8,6 @@ import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EnvironmentVariables } from '@/config/type';
-import { User } from '@/user/user.entity';
 import { ClsModule, ClsService } from 'nestjs-cls';
 import { v4 as uuid } from 'uuid';
 import { Request } from 'express';
@@ -20,10 +19,8 @@ import { ApiExceptionFilter } from '@/common/filter/apiException.filter';
 import { GlobalExceptionsFilter } from '@/common/filter/globalException.filter';
 import { GlobalResponseInterceptor } from '@/common/interceptor/globalResponse.interceptor';
 import { RequestLoggerInterceptor } from '@/common/interceptor/requestLogger.interceptor';
-import { AIChatMessageController } from './ai-chat-message/ai-chat-message.controller';
-import { AIChatSessionController } from './ai-chat-session/ai-chat-session.controller';
 import { AIChatSessionModule } from './ai-chat-session/ai-chat-session.module';
-import { UsersssModule } from './usersss/usersss.module';
+import { AIChatMessageModule } from './ai-chat-message/ai-chat-message.module';
 
 @Module({
   imports: [
@@ -98,18 +95,18 @@ import { UsersssModule } from './usersss/usersss.module';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWD'),
         database: configService.get('DB_DATABASE'),
-        entities: [User],
+        autoLoadEntities: true,
         synchronize: configService.get('DB_SYNC'),
         logging: process.env.NODE_ENV === 'development',
       }),
     }),
-    AIModule,
     AuthModule,
     UserModule,
+    AIModule,
     AIChatSessionModule,
-    UsersssModule,
+    AIChatMessageModule,
   ],
-  controllers: [AppController, AIChatMessageController, AIChatSessionController],
+  controllers: [AppController],
   providers: [
     AppService,
     {

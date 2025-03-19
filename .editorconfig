@@ -1,6 +1,6 @@
 root = true
 
-[*]
+[*.{js,jsx,ts,tsx}]
 insert_final_newline = true
 indent_style = space
 indent_size = 2

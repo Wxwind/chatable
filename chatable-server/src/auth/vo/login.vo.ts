@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateSessionDto {
+export class LoginVo {
   @ApiProperty()
-  modelName: string;
+  access_token: string;
 }
