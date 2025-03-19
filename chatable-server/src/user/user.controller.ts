@@ -13,7 +13,7 @@ export class UserController {
   async register(@Body() dto: CreateUserDto): Promise<CreateUserVo> {
     const existingUser = await this.userService.findByUsername(dto.username);
     if (existingUser) {
-      throw new ApiException(ErrorCode.USERNAME_ALREADY_EXISTS, '用户名已被注册');
+      throw new ApiException(ErrorCode.USERNAME_ALREADY_EXISTS);
     }
 
     const user = await this.userService.saveUser(dto);

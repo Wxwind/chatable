@@ -8,7 +8,7 @@ import { CreateUserVo } from '@/user/vo/create-user.vo';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDto } from '@/auth/dto/login.dto';
 import { RequestWithAuth } from './type';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -18,6 +18,7 @@ export class AuthController {
   ) {}
 
   @Post('login')
+  @ApiOkResponse({ type: LoginVo })
   async login(@Body() loginDto: LoginDto): Promise<LoginVo> {
     const user = await this.authService.validateUser(loginDto.username, loginDto.password);
     if (!user) {
@@ -28,6 +29,7 @@ export class AuthController {
   }
 
   @Post('register')
+  @ApiOkResponse({ type: CreateUserVo })
   async register(@Body() body: CreateUserDto): Promise<CreateUserVo> {
     const { password, deletedAt, ...user } = await this.userService.saveUser(body);
     return user;

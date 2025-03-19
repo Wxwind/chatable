@@ -1,14 +1,15 @@
 const typescript = require("@rollup/plugin-typescript");
 const resolve = require("@rollup/plugin-node-resolve");
 const commonjs = require("@rollup/plugin-commonjs");
+const json = require("@rollup/plugin-json");
 
 module.exports = [
   {
     input: "src/index.ts",
-    plugins: [resolve(), commonjs(), typescript()],
+    plugins: [typescript()],
     output: [
       {
-        file: "bin/index.js",
+        dir: "./bin",
         format: "cjs",
       },
     ],

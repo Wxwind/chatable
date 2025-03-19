@@ -3,6 +3,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { Response } from 'express';
 import { ResponseInfo } from '../api/responseInfo';
 import { ApiException } from '../apiException';
+import { ErrorCodeMsg } from '../api/errorCode';
 
 @Catch(ApiException)
 export class ApiExceptionFilter implements ExceptionFilter {
@@ -12,11 +13,10 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const resp = ctx.getResponse<Response>();
 
-    const { code, message } = exception;
-
+    const { code } = exception;
     const body: ResponseInfo = {
       code,
-      msg: message,
+      msg: ErrorCodeMsg[code],
     };
 
     this.logger.error(JSON.stringify(body));

@@ -1,26 +1,36 @@
 import axios, { type AxiosResponse, type AxiosRequestConfig } from 'axios';
-import { ResponseInfo } from './types';
-
-const service = axios.create({
-  baseURL: process.env.EXPO_PUBLIC_API_URL,
-  timeout: 5000,
-  withCredentials: false, // 跨域请求是否需要携带 cookie
-});
+import { HttpClient } from './http-client';
+import { AiService } from './Ai';
+import { UserService } from './User';
+import { AuthService } from './Auth';
+import { AiChatSessionService } from './AiChatSession';
+import { ResponseInfo } from './type';
 
 /**
  * @type Q post请求的数据类型
  * @type D 回应的消息中data的类型
  */
 export const request = async <Q = unknown, D = unknown>(config: AxiosRequestConfig<Q>): Promise<D> => {
-  const a = await service.request<ResponseInfo<D>, AxiosResponse<ResponseInfo<D>>, Q>(config);
+  const a = await axiosInstance.request<ResponseInfo<D>, AxiosResponse<ResponseInfo<D>>, Q>(config);
   return a.data.data;
 };
 
+const httpClient = new HttpClient({
+  baseURL: process.env.EXPO_PUBLIC_API_URL,
+  timeout: 5000,
+  withCredentials: false, // 跨域请求是否需要携带 cookie
+});
+
+const axiosInstance = httpClient.instance;
+export const aiService = new AiService(httpClient);
+export const userService = new UserService(httpClient);
+export const authService = new AuthService(httpClient);
+export const aiChatSessionService = new AiChatSessionService(httpClient);
+
 //请求拦截器
-service.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   (config) => {
-    console.log(`发送消息`);
-    console.log(config);
+    console.log(`发送消息`, config);
     return config;
   },
   (error: any) => {
@@ -29,18 +39,17 @@ service.interceptors.request.use(
 );
 
 //返回拦截器
-service.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   // 2xx 范围内的状态码都会触发该函数。
   (response: AxiosResponse<ResponseInfo<any>>) => {
     const { code, msg } = response.data;
 
-    console.log(`收到消息`);
-    console.log(response);
+    console.log(`收到消息`, response);
     if (code === 0) {
       return response;
     } else {
       //服务器内部逻辑输出了非0的错误码
-      return Promise.reject(new Error(`${code}: ${msg}`));
+      return Promise.reject(new Error(msg));
     }
   },
   //超出 2xx 范围的状态码都会触发该函数

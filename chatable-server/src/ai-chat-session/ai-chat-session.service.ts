@@ -21,14 +21,26 @@ export class AIChatSessionService {
     return newEntity;
   }
 
-  async findAll(userId: number): Promise<AIChatSession[]> {
+  async findOne(sessionId: number): Promise<AIChatSession | null> {
+    const res = await this.aiChatSessionRepo.findOne({
+      where: {
+        id: sessionId,
+      },
+      withDeleted: false,
+      relations: ['user'],
+    });
+
+    return res;
+  }
+
+  async findAllByUserId(userId: number): Promise<AIChatSession[]> {
     const user = await this.userRepo.findOne({
       where: {
         id: userId,
       },
     });
     if (!user) {
-      throw new ApiException(ErrorCode.USER_NOT_FOUND, 'user not found');
+      throw new ApiException(ErrorCode.USER_NOT_FOUND);
     }
     const res = await this.aiChatSessionRepo.find({
       where: {

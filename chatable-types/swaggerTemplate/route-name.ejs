@@ -15,11 +15,11 @@ const { _, fmtToJSDocLine, require } = utils;
 
 const methodAliases = {
   get: (pathName, hasPathInserts) =>
-    _.camelCase(`${pathName}_${hasPathInserts ? "detail" : "list"}`),
-  post: (pathName, hasPathInserts) => _.camelCase(`${pathName}_create`),
-  put: (pathName, hasPathInserts) => _.camelCase(`${pathName}_update`),
-  patch: (pathName, hasPathInserts) => _.camelCase(`${pathName}_partial_update`),
-  delete: (pathName, hasPathInserts) => _.camelCase(`${pathName}_delete`),
+    _.camelCase(`${pathName}${hasPathInserts ? "Detail" : "List"}`),
+  post: (pathName, hasPathInserts) => _.camelCase(`${pathName}Create`),
+  put: (pathName, hasPathInserts) => _.camelCase(`${pathName}Update`),
+  patch: (pathName, hasPathInserts) => _.camelCase(`${pathName}Patch`),
+  delete: (pathName, hasPathInserts) => _.camelCase(`${pathName}Delete`),
 };
 
 const createCustomOperationId = (method, route, moduleName) => {
