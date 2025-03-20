@@ -6,6 +6,8 @@ import { useRequest } from 'ahooks';
 import { authService } from '@/services';
 import * as SecureStore from 'expo-secure-store';
 import { StoreKeyEnum } from '@/constants';
+import { ProInput } from '@/components/ui/ProInput';
+import { IconSymbol, ProButton } from '@/components/ui';
 
 type LoginDto = {
   username: string;
@@ -23,13 +25,15 @@ export default function Login() {
   });
 
   return (
-    <ThemedView>
-      <ThemedText type="title">Chatable</ThemedText>
-      <View style={styles.container}>
-        <TextInput placeholder="用户名" onChangeText={() => {}} onSubmitEditing={() => {}} />
-        <TextInput secureTextEntry placeholder="密码" />
-      </View>
-      <Button
+    <ThemedView style={styles.container}>
+      <ThemedText style={styles.title} type="title">
+        Chatable
+      </ThemedText>
+
+      <ProInput placeholder="用户名" onChangeText={() => {}} onSubmitEditing={() => {}} />
+      <ProInput prefix={<IconSymbol name="lock-outline" />} secureTextEntry placeholder="密码" />
+
+      <ProButton
         disabled={loading}
         title="登录"
         onPress={() => {
@@ -42,6 +46,17 @@ export default function Login() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: '20%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    columnGap: 4,
+    rowGap: 32,
+  },
+  title: {
+    width: '100%',
+    textAlign: 'center',
   },
 });

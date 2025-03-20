@@ -5,6 +5,7 @@ import { UserService } from './User';
 import { AuthService } from './Auth';
 import { AiChatSessionService } from './AiChatSession';
 import { ResponseInfo } from './type';
+import { router } from 'expo-router';
 
 /**
  * @type Q post请求的数据类型
@@ -62,6 +63,7 @@ axiosInstance.interceptors.response.use(
           break;
         case 401:
           message = '未登录';
+          router.navigate('/login');
           break;
         case 403:
           message = '没有权限操作';
