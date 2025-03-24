@@ -8,6 +8,7 @@ import { ResponseInfo } from './type';
 import { router } from 'expo-router';
 import { StoreKeyEnum } from '@/constants';
 import * as SecureStore from 'expo-secure-store';
+import { getStorageStateExternal } from '@/hooks/useStorageState';
 
 /**
  * @type Q post请求的数据类型
@@ -33,7 +34,7 @@ export const aiChatSessionService = new AiChatSessionService(httpClient);
 //请求拦截器
 axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = await SecureStore.getItemAsync(StoreKeyEnum.Token);
+    const token = await getStorageStateExternal(StoreKeyEnum.Token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

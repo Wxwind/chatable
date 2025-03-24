@@ -63,3 +63,17 @@ export function useStorageState(key: string): UseStateHook<string> {
 
   return [state, setValue];
 }
+
+export async function getStorageStateExternal(key: string) {
+  if (Platform.OS === 'web') {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        return localStorage.getItem(key);
+      }
+    } catch (e) {
+      console.error('Local storage is unavailable:', e);
+    }
+  } else {
+    return SecureStore.getItemAsync(key);
+  }
+}

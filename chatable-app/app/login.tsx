@@ -35,6 +35,8 @@ export default function Login() {
       <Input prefix={<IconSymbol name="lock-outline" />} secureTextEntry placeholder="密码" />
 
       <Button
+        type="primary"
+        style={{ width: '100%' }}
         disabled={loading}
         onPress={() => {
           run(loginDto);
