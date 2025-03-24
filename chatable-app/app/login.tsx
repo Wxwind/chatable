@@ -1,13 +1,14 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Button, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useImmer } from 'use-immer';
 import { useRequest } from 'ahooks';
 import { authService } from '@/services';
 import * as SecureStore from 'expo-secure-store';
 import { StoreKeyEnum } from '@/constants';
-import { ProInput } from '@/components/ui/ProInput';
-import { IconSymbol, ProButton } from '@/components/ui';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui';
+import { IconSymbol } from '@/components/IconSymbol';
 
 type LoginDto = {
   username: string;
@@ -30,16 +31,17 @@ export default function Login() {
         Chatable
       </ThemedText>
 
-      <ProInput placeholder="用户名" onChangeText={() => {}} onSubmitEditing={() => {}} />
-      <ProInput prefix={<IconSymbol name="lock-outline" />} secureTextEntry placeholder="密码" />
+      <Input placeholder="用户名" onChangeText={() => {}} onSubmitEditing={() => {}} />
+      <Input prefix={<IconSymbol name="lock-outline" />} secureTextEntry placeholder="密码" />
 
-      <ProButton
+      <Button
         disabled={loading}
-        title="登录"
         onPress={() => {
           run(loginDto);
         }}
-      />
+      >
+        登录
+      </Button>
     </ThemedView>
   );
 }

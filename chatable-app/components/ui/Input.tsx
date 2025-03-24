@@ -4,7 +4,7 @@ export interface ProInputProps extends TextInputProps {
   prefix?: React.ReactNode;
 }
 
-export function ProInput(props: ProInputProps) {
+export function Input(props: ProInputProps) {
   const { prefix, ...rest } = props;
   return (
     <View style={styles.container}>
