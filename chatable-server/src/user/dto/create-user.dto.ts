@@ -3,8 +3,15 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
+  @ApiProperty({
+    enum: ['phone', 'email'],
+  })
+  type: 'phone' | 'email';
+
+  @IsNotEmpty()
   @ApiProperty()
-  username: string;
+  // phone number or email
+  account: string;
 
   @IsNotEmpty()
   @ApiProperty()
@@ -12,5 +19,12 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @ApiProperty()
-  nickname: string;
+  username: string;
+}
+
+export class CreateUserByOAuth {
+  openId: string;
+  platform: string;
+  username: string;
+  avatar: string;
 }

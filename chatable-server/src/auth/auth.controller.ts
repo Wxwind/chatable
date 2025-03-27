@@ -1,14 +1,17 @@
 import { LoginVo } from '@/auth/vo/login.vo';
 
-import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '@/user/user.service';
 import { CreateUserDto } from '@/user/dto/create-user.dto';
-import { CreateUserVo } from '@/user/vo/create-user.vo';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDto } from '@/auth/dto/login.dto';
-import { RequestWithAuth } from './type';
-import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
+import { RequestWithAuth, RequestWithGithub } from './type';
+import { ApiBearerAuth, ApiOAuth2, ApiOkResponse } from '@nestjs/swagger';
+import { ApiException } from '@/common/apiException';
+import { ErrorCode } from '@/common/api/errorCode';
+import { AccountType, getAccountType } from '@/utils/getAccountType';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -17,22 +20,69 @@ export class AuthController {
     private userService: UserService
   ) {}
 
+  @Post('github/login')
+  @UseGuards(AuthGuard('github'))
+  @ApiOAuth2([])
+  async loginByGithub() {
+    // 跳转到github登录
+  }
+
+  @Get('github/callback')
+  @UseGuards(AuthGuard('github'))
+  @ApiOkResponse({ type: LoginVo })
+  async loginByGithubCallback(@Req() req: RequestWithGithub): Promise<LoginVo> {
+    // 如果不存在则创建
+    const { user, profile } = req.user;
+    if (user === null) {
+      this.userService.saveUser();
+      return;
+    }
+    const res = await this.authService.login(user);
+    return res;
+  }
+
+  @Post('github/bind')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOkResponse()
+  async bindGithub(@Req() req: RequestWithAuth) {
+    // TODO
+  }
+
   @Post('login')
   @ApiOkResponse({ type: LoginVo })
-  async login(@Body() loginDto: LoginDto): Promise<LoginVo> {
-    const user = await this.authService.validateUser(loginDto.username, loginDto.password);
-    if (!user) {
-      throw new UnauthorizedException('username or password incorrect');
-    }
+  async login(@Body() dto: LoginDto): Promise<LoginVo> {
+    const accountType = getAccountType(dto.account);
+    switch (accountType) {
+      case AccountType.PHONE: {
+        // 处理手机号登录
+        const user = await this.authService.validateUserByPhone(dto.account, dto.password);
+        if (!user) {
+          throw new ApiException(ErrorCode.LOGIN_PHONE_VERIFY_FAILED);
+        }
 
-    return this.authService.login(user);
+        return this.authService.login(user);
+      }
+      case AccountType.EMAIL: {
+        // 处理邮箱登录
+        const user = await this.authService.validateUserByEmail(dto.account, dto.password);
+        if (!user) {
+          throw new ApiException(ErrorCode.LOGIN_EMAIL_VERIFY_FAILED);
+        }
+
+        return this.authService.login(user);
+      }
+      case AccountType.INVALID:
+      default:
+        // 理论上不会执行到这里
+        throw new ApiException(ErrorCode.LOGIN_USER_INVALID_ACCOUNT_TYPE);
+    }
   }
 
   @Post('register')
-  @ApiOkResponse({ type: CreateUserVo })
-  async register(@Body() body: CreateUserDto): Promise<CreateUserVo> {
-    const { password, deletedAt, ...user } = await this.userService.saveUser(body);
-    return user;
+  @ApiOkResponse()
+  async register(@Body() body: CreateUserDto): Promise<null> {
+    const user = await this.userService.saveUser(body);
+    return null;
   }
 
   @UseGuards(JwtAuthGuard)

@@ -12,4 +12,8 @@ export interface EnvironmentVariables {
 
   OPEN_API_KEY: string;
   OPENAI_BASE_URL: string;
+
+  OAUTH_GITHUB_CLIENT_ID: string;
+  OAUTH_GITHUB_CLIENT_SECRET: string;
+  OAUTH_GITHUB_CALLBACK_URL: string;
 }

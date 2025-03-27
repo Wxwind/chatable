@@ -1,13 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, Sse, UseGuards } from '@nestjs/common';
 import { AIChatSessionService } from './ai-chat-session.service';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { CreateSessionDto } from './dto/create-session-dto';
 import { RequestWithAuth } from '@/auth/type';
-import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiProduces } from '@nestjs/swagger';
 import { CreateSessionVo } from './vo/create-session-vo';
 import { GetSessionsVo } from './vo/get-sessions-vo';
 import { ApiException } from '@/common/apiException';
 import { ErrorCode } from '@/common/api/errorCode';
+import { PostMessageDto } from './dto/post-message.dto';
 
 @Controller('ai-chat-session')
 @UseGuards(JwtAuthGuard)
@@ -17,7 +18,7 @@ export class AIChatSessionController {
 
   @Post('session')
   @ApiOkResponse({ type: CreateSessionVo })
-  async create(@Body() dto: CreateSessionDto, @Req() request: RequestWithAuth): Promise<CreateSessionVo> {
+  async createSession(@Body() dto: CreateSessionDto, @Req() request: RequestWithAuth): Promise<CreateSessionVo> {
     const userId = request.user.userId;
     const session = await this.aiChatSessionService.save({ modelName: dto.modelName, userId });
 
@@ -53,4 +54,13 @@ export class AIChatSessionController {
     await this.aiChatSessionService.remove(sessionId);
     return;
   }
+
+  @Post('session/:id/chat')
+  @Sse()
+  @ApiOperation({
+    summary: '订阅ai消息流 (SSE)',
+    description: '返回消息流',
+  })
+  @ApiProduces('text/event-stream')
+  async postMessage(@Param('id') sessionId: number, @Body() dto: PostMessageDto, @Req() request: RequestWithAuth) {}
 }
