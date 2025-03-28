@@ -1,3 +1,4 @@
+import { UserThirdAuthPlatform } from '@/user-third-auth/user-third-auth.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
 
@@ -24,7 +25,7 @@ export class CreateUserDto {
 
 export class CreateUserByOAuth {
   openId: string;
-  platform: string;
+  platform: UserThirdAuthPlatform;
   username: string;
   avatar: string;
 }

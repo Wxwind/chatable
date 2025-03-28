@@ -1,5 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Unique, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Unique, ManyToOne, JoinColumn } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
+import { User } from '@/user/user.entity';
+
+export enum UserThirdAuthPlatform {
+  GITHUB = 'github',
+}
 
 @Entity()
 @Unique(['phone', 'email', 'githubId'])
@@ -7,12 +12,12 @@ export class UserThirdAuth {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne()
-  userId: string;
+  @ManyToOne(() => User, (user) => user.userThirdAuths)
+  user: User;
 
   @IsNotEmpty()
-  @Column()
-  platform: string;
+  @Column({ type: 'enum', enum: UserThirdAuthPlatform })
+  platform: UserThirdAuthPlatform;
 
   @IsNotEmpty()
   @Column()

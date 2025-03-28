@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, Unique } from 'typeorm';
 import { AIChatSession } from '@/ai-chat-session/ai-chat-session.entity';
+import { UserThirdAuth } from '@/user-third-auth/user-third-auth.entity';
 
 @Entity()
 @Unique(['phone', 'email', 'githubId'])
@@ -15,9 +16,6 @@ export class User {
 
   @Column()
   phone: string;
-
-  @Column()
-  githubId: string;
 
   @Column()
   avatar: string;
@@ -46,4 +44,7 @@ export class User {
 
   @OneToMany(() => AIChatSession, (session) => session.user)
   aiChatSessions: AIChatSession[];
+
+  @OneToMany(() => UserThirdAuth, (userThirdAuth) => userThirdAuth.user)
+  userThirdAuths: UserThirdAuth[];
 }

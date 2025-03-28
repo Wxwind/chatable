@@ -1,17 +1,19 @@
 import { LoginVo } from '@/auth/vo/login.vo';
 
-import { Controller, Post, UseGuards, Request, Get, Body, UnauthorizedException, Req } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Get, Body, Req, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '@/user/user.service';
 import { CreateUserDto } from '@/user/dto/create-user.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDto } from '@/auth/dto/login.dto';
-import { RequestWithAuth, RequestWithGithub } from './type';
-import { ApiBearerAuth, ApiOAuth2, ApiOkResponse } from '@nestjs/swagger';
+import { JwtPayLoad, RequestWithGithub } from './type';
+import { ApiBearerAuth, ApiOAuth2, ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { ApiException } from '@/common/apiException';
 import { ErrorCode } from '@/common/api/errorCode';
 import { AccountType, getAccountType } from '@/utils/getAccountType';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from '@/decorator';
+import { GithubLoginCallbackQuery } from './dto/github-login-callback.query';
 
 @Controller('auth')
 export class AuthController {
@@ -22,20 +24,27 @@ export class AuthController {
 
   @Post('github/login')
   @UseGuards(AuthGuard('github'))
-  @ApiOAuth2([])
+  @ApiOAuth2(['read:user'])
   async loginByGithub() {
     // 跳转到github登录
   }
 
-  @Get('github/callback')
+  @Get('github/login/callback')
   @UseGuards(AuthGuard('github'))
+  @ApiQuery({ type: GithubLoginCallbackQuery })
   @ApiOkResponse({ type: LoginVo })
   async loginByGithubCallback(@Req() req: RequestWithGithub): Promise<LoginVo> {
-    // 如果不存在则创建
     const { user, profile } = req.user;
+    // 如果不存在则创建
     if (user === null) {
-      this.userService.saveUser();
-      return;
+      const savedUser = await this.authService.findOrCreateUserByGitHub({
+        githubId: profile.id,
+        username: profile.username,
+        avatar: profile.avatar_url,
+      });
+
+      const res = await this.authService.login(savedUser);
+      return res;
     }
     const res = await this.authService.login(user);
     return res;
@@ -44,7 +53,7 @@ export class AuthController {
   @Post('github/bind')
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse()
-  async bindGithub(@Req() req: RequestWithAuth) {
+  async bindGithub(@User() user: JwtPayLoad) {
     // TODO
   }
 
@@ -81,14 +90,14 @@ export class AuthController {
   @Post('register')
   @ApiOkResponse()
   async register(@Body() body: CreateUserDto): Promise<null> {
-    const user = await this.userService.saveUser(body);
+    const user = await this.userService.create(body);
     return null;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiBearerAuth()
-  getProfile(@Request() req: RequestWithAuth) {
-    return req.user;
+  getProfile(@User() user: JwtPayLoad) {
+    return user;
   }
 }

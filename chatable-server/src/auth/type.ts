@@ -1,15 +1,15 @@
 import { User } from '@/user/user.entity';
+import type { Request } from 'express';
 
 export type JwtPayLoad = {
   username: string;
   userId: number;
 };
-export type RequestWithAuth = Request & { user: JwtPayLoad };
 
 export type GithubProfile = {
   id: string;
   username: string;
-  emails: string;
+  emails: { value: string }[];
   avatar_url: string;
 };
 

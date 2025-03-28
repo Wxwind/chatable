@@ -2,13 +2,14 @@ import { Body, Controller, Delete, Get, Param, Post, Req, Sse, UseGuards } from 
 import { AIChatSessionService } from './ai-chat-session.service';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { CreateSessionDto } from './dto/create-session-dto';
-import { RequestWithAuth } from '@/auth/type';
+import { JwtPayLoad } from '@/auth/type';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiProduces } from '@nestjs/swagger';
 import { CreateSessionVo } from './vo/create-session-vo';
 import { GetSessionsVo } from './vo/get-sessions-vo';
 import { ApiException } from '@/common/apiException';
 import { ErrorCode } from '@/common/api/errorCode';
 import { PostMessageDto } from './dto/post-message.dto';
+import { User } from '@/decorator';
 
 @Controller('ai-chat-session')
 @UseGuards(JwtAuthGuard)
@@ -18,8 +19,8 @@ export class AIChatSessionController {
 
   @Post('session')
   @ApiOkResponse({ type: CreateSessionVo })
-  async createSession(@Body() dto: CreateSessionDto, @Req() request: RequestWithAuth): Promise<CreateSessionVo> {
-    const userId = request.user.userId;
+  async createSession(@Body() dto: CreateSessionDto, @User() user: JwtPayLoad): Promise<CreateSessionVo> {
+    const userId = user.userId;
     const session = await this.aiChatSessionService.save({ modelName: dto.modelName, userId });
 
     const vo = new CreateSessionVo();
@@ -29,8 +30,8 @@ export class AIChatSessionController {
 
   @Get('sessions')
   @ApiOkResponse({ type: GetSessionsVo })
-  async getSessions(@Req() request: RequestWithAuth): Promise<GetSessionsVo> {
-    const userId = request.user.userId;
+  async getSessions(@User() user: JwtPayLoad): Promise<GetSessionsVo> {
+    const userId = user.userId;
     const sessions = await this.aiChatSessionService.findAllByUserId(userId);
 
     const vo = new GetSessionsVo();
@@ -42,8 +43,8 @@ export class AIChatSessionController {
   }
 
   @Delete('session/:id')
-  async removeSession(@Param('id') sessionId: number, @Req() request: RequestWithAuth) {
-    const userId = request.user.userId;
+  async removeSession(@Param('id') sessionId: number, @User() user: JwtPayLoad) {
+    const userId = user.userId;
     const session = await this.aiChatSessionService.findOne(sessionId);
     if (!session) {
       throw new ApiException(ErrorCode.SESSION_NOT_FOUND);
@@ -62,5 +63,5 @@ export class AIChatSessionController {
     description: '返回消息流',
   })
   @ApiProduces('text/event-stream')
-  async postMessage(@Param('id') sessionId: number, @Body() dto: PostMessageDto, @Req() request: RequestWithAuth) {}
+  async postMessage(@Param('id') sessionId: number, @Body() dto: PostMessageDto, @User() user: JwtPayLoad) {}
 }

@@ -9,7 +9,11 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "gen:android": "expo prebuild -p android",
+    "gen:ios": "expo prebuild -p ios",
+    "run:android": "expo run:android",
+    "run:ios": "expo run:ios"
   },
   "jest": {
     "preset": "jest-expo"

@@ -1,5 +1,5 @@
 import { AIChatSession } from '@/ai-chat-session/ai-chat-session.entity';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class AIChatMessage {
@@ -7,7 +7,6 @@ export class AIChatMessage {
   id: number;
 
   @ManyToOne(() => AIChatSession, (session) => session.aiChatMessages)
-  @JoinColumn()
   aiChatSession: AIChatSession;
 
   @Column()

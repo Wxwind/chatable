@@ -5,16 +5,19 @@ import { JwtPayLoad } from './type';
 import { LoginVo } from '@/auth/vo/login.vo';
 import { User } from '@/user/user.entity';
 import { CryptoUtils } from '@/utils/encrypt';
+import { UserThirdAuthPlatform } from '@/user-third-auth/user-third-auth.entity';
+import { UserThirdAuthService } from '@/user-third-auth/user-third-auth.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UserService,
+    private userService: UserService,
+    private userThirdAuthService: UserThirdAuthService,
     private jwtService: JwtService
   ) {}
 
   async validateUserByPhone(phone: string, password: string): Promise<User | null> {
-    const user = await this.usersService.findByPhone(phone);
+    const user = await this.userService.findByPhone(phone);
 
     if (user && (await CryptoUtils.compare(password, user.password))) {
       return user;
@@ -23,7 +26,7 @@ export class AuthService {
   }
 
   async validateUserByEmail(phone: string, password: string): Promise<User | null> {
-    const user = await this.usersService.findByEmail(phone);
+    const user = await this.userService.findByEmail(phone);
 
     if (user && (await CryptoUtils.compare(password, user.password))) {
       return user;
@@ -31,9 +34,17 @@ export class AuthService {
     return null;
   }
 
-  // 查询用户，不存在创建User
-  async findByGithubId(dto: { githubId: string; username: string }) {
-    const user = await this.usersService.findByGithubId(dto.githubId);
+  // 查询User，不存在则创建并绑定github id
+  async findOrCreateUserByGitHub(dto: { githubId: string; username: string; avatar: string }): Promise<User> {
+    let user = await this.userThirdAuthService.findByGitHubId(dto.githubId);
+    if (user === null) {
+      user = await this.userService.createByThird({
+        openId: dto.githubId,
+        platform: UserThirdAuthPlatform.GITHUB,
+        username: dto.username,
+        avatar: dto.avatar,
+      });
+    }
     return user;
   }
 

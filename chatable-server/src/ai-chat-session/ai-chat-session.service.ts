@@ -2,17 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { AIChatSession } from './ai-chat-session.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Not, Repository } from 'typeorm';
-import { User } from '@/user/user.entity';
 import { ApiException } from '@/common/apiException';
 import { ErrorCode } from '@/common/api/errorCode';
+import { UserService } from '@/user/user.service';
 
 @Injectable()
 export class AIChatSessionService {
   constructor(
     @InjectRepository(AIChatSession)
     private aiChatSessionRepo: Repository<AIChatSession>,
-    @InjectRepository(User)
-    private userRepo: Repository<User>
+    private userService: UserService
   ) {}
 
   async save(dto: { userId: number; modelName: string }): Promise<AIChatSession> {
@@ -34,11 +33,7 @@ export class AIChatSessionService {
   }
 
   async findAllByUserId(userId: number): Promise<AIChatSession[]> {
-    const user = await this.userRepo.findOne({
-      where: {
-        id: userId,
-      },
-    });
+    const user = await this.userService.findById(userId);
     if (!user) {
       throw new ApiException(ErrorCode.USER_NOT_FOUND);
     }

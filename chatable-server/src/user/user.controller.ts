@@ -18,7 +18,7 @@ export class UserController {
         if (existingUser) {
           throw new ApiException(ErrorCode.REGISTER_EMAIL_ALREADY_EXISTS);
         }
-        const user = await this.userService.saveUser(dto);
+        const user = await this.userService.create(dto);
 
         break;
       }
@@ -27,7 +27,7 @@ export class UserController {
         if (existingUser) {
           throw new ApiException(ErrorCode.REGISTER_PHONE_ALREADY_EXISTS);
         }
-        const user = await this.userService.saveUser(dto);
+        const user = await this.userService.create(dto);
 
         break;
       }

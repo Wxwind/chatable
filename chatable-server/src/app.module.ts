@@ -20,6 +20,7 @@ import { GlobalResponseInterceptor } from '@/common/interceptor/globalResponse.i
 import { RequestLoggerInterceptor } from '@/common/interceptor/requestLogger.interceptor';
 import { AIChatSessionModule } from './ai-chat-session/ai-chat-session.module';
 import { AIChatMessageModule } from './ai-chat-message/ai-chat-message.module';
+import { UserThirdAuthModule } from './user-third-auth/user-third-auth.module';
 
 @Module({
   imports: [
@@ -103,6 +104,7 @@ import { AIChatMessageModule } from './ai-chat-message/ai-chat-message.module';
     UserModule,
     AIChatSessionModule,
     AIChatMessageModule,
+    UserThirdAuthModule,
   ],
   controllers: [AppController],
   providers: [
