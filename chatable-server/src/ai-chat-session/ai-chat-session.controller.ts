@@ -1,28 +1,45 @@
-import { Body, Controller, Delete, Get, Param, Post, Req, Sse, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, LoggerService, Param, Post, Req, Sse, UseGuards } from '@nestjs/common';
 import { AIChatSessionService } from './ai-chat-session.service';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { CreateSessionDto } from './dto/create-session-dto';
+import { CreateSessionDto } from './dto/create-session.dto';
 import { JwtPayLoad } from '@/auth/type';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiProduces } from '@nestjs/swagger';
 import { CreateSessionVo } from './vo/create-session-vo';
 import { GetSessionsVo } from './vo/get-sessions-vo';
-import { ApiException } from '@/common/apiException';
-import { ErrorCode } from '@/common/api/errorCode';
 import { PostMessageDto } from './dto/post-message.dto';
 import { User } from '@/decorator';
+import { AIChatMessageService } from '@/ai-chat-message/ai-chat-message.service';
+import { GetMessagesDto } from '@/ai-chat-message/dto/get-messages.dto';
+import { GetMessagesVo } from '@/ai-chat-message/vo/get-messages.vo';
+import { OpenAIService } from '@/openai/openai.service';
+import {
+  ChatCompletionAssistantMessageParam,
+  ChatCompletionMessageParam,
+  ChatCompletionSystemMessageParam,
+  ChatCompletionUserMessageParam,
+} from 'openai/resources';
+import { AIChatMessageSender } from '@/ai-chat-message/ai-chat-message.entity';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Observer } from 'rxjs';
 
 @Controller('ai-chat-session')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class AIChatSessionController {
-  constructor(private aiChatSessionService: AIChatSessionService) {}
+  constructor(
+    @Inject(WINSTON_MODULE_NEST_PROVIDER) private readonly logger: LoggerService,
+    private aiChatSessionService: AIChatSessionService,
+    private aiChatMessageService: AIChatMessageService,
+    private openAIService: OpenAIService
+  ) {}
 
   @Post('session')
   @ApiOkResponse({ type: CreateSessionVo })
   async createSession(@Body() dto: CreateSessionDto, @User() user: JwtPayLoad): Promise<CreateSessionVo> {
     const userId = user.userId;
-    const session = await this.aiChatSessionService.save({ modelName: dto.modelName, userId });
 
+    const title = await this.openAIService.generateTitle(dto.initialMessage);
+    const session = await this.aiChatSessionService.save({ modelName: dto.modelName, user: { id: userId }, title });
     const vo = new CreateSessionVo();
     vo.sessionId = session.id;
     return vo;
@@ -44,24 +61,97 @@ export class AIChatSessionController {
 
   @Delete('session/:id')
   async removeSession(@Param('id') sessionId: number, @User() user: JwtPayLoad) {
-    const userId = user.userId;
-    const session = await this.aiChatSessionService.findOne(sessionId);
-    if (!session) {
-      throw new ApiException(ErrorCode.SESSION_NOT_FOUND);
-    }
-    if (session.user.id !== userId) {
-      throw new ApiException(ErrorCode.SESSION_ID_ILLEGAL);
-    }
+    const session = await this.aiChatSessionService.verifySessionOwnership(user.userId, sessionId);
     await this.aiChatSessionService.remove(sessionId);
     return;
   }
 
-  @Post('session/:id/chat')
-  @Sse()
+  @Sse('session/:id/chat')
   @ApiOperation({
     summary: '订阅ai消息流 (SSE)',
     description: '返回消息流',
   })
   @ApiProduces('text/event-stream')
-  async postMessage(@Param('id') sessionId: number, @Body() dto: PostMessageDto, @User() user: JwtPayLoad) {}
+  async postMessage(@Param('id') sessionId: number, @Body() dto: PostMessageDto, @User() user: JwtPayLoad) {
+    const session = await this.aiChatSessionService.verifySessionOwnership(user.userId, sessionId);
+    const history: { message: string; sender: AIChatMessageSender }[] = await this.aiChatMessageService.findMessagesBySessionIdWithPagination(
+      session,
+      0,
+      10
+    );
+    history.push({
+      sender: AIChatMessageSender.USER,
+      message: dto.message,
+    });
+    const messages: ChatCompletionMessageParam[] = history.map((msg) => {
+      switch (msg.sender) {
+        case AIChatMessageSender.USER: {
+          const res: ChatCompletionUserMessageParam = {
+            role: 'user',
+            content: msg.message,
+          };
+          return res;
+        }
+        case AIChatMessageSender.AI: {
+          const res: ChatCompletionAssistantMessageParam = {
+            role: 'assistant',
+            content: msg.message,
+          };
+          return res;
+        }
+        case AIChatMessageSender.SYSTEM: {
+          const res: ChatCompletionSystemMessageParam = {
+            role: 'system',
+            content: msg.message,
+          };
+          return res;
+        }
+      }
+    });
+
+    // 保存用户输入信息
+    await this.aiChatMessageService.save({
+      sessionId,
+      message: dto.message,
+      sender: AIChatMessageSender.USER,
+    });
+    const response = await this.openAIService.chatStream(messages);
+
+    let buffer = '';
+    const completionObserver: Observer<any> = {
+      next: (chunk) => {
+        buffer += chunk.data;
+      },
+      error: (err) => {
+        this.logger.error(err);
+      },
+      complete: () => {
+        void (async () => {
+          const aiChatMessage = await this.aiChatMessageService.save({
+            sessionId,
+            message: buffer,
+            sender: AIChatMessageSender.SYSTEM,
+          });
+        })();
+      },
+    };
+
+    response.subscribe(completionObserver);
+
+    return response;
+  }
+
+  @Get('session/:id/chat')
+  async getHistoryMessage(@Param('id') sessionId: number, @Body() dto: GetMessagesDto, @User() user: JwtPayLoad): Promise<GetMessagesVo> {
+    const session = await this.aiChatSessionService.verifySessionOwnership(user.userId, sessionId);
+    const res = await this.aiChatMessageService.findMessagesBySessionIdWithPagination(session, dto.page, dto.limit);
+
+    const vo = new GetMessagesVo();
+    vo.messages = res.map((a) => ({
+      sender: a.sender,
+      message: a.message,
+    }));
+
+    return vo;
+  }
 }

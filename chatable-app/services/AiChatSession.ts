@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-import { CreateSessionDto, CreateSessionVo, GetSessionsVo } from "./data-contracts";
+import { CreateSessionDto, CreateSessionVo, GetMessagesDto, GetSessionsVo } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class AiChatSessionService<SecurityDataType = unknown> {
@@ -23,11 +23,11 @@ export class AiChatSessionService<SecurityDataType = unknown> {
    * No description
    *
    * @tags AIChatSession
-   * @name AiChatSessionControllerCreate
+   * @name AiChatSessionControllerCreateSession
    * @request POST:/ai-chat-session/session
    * @secure
    */
-  aiChatSessionControllerCreate = (data: CreateSessionDto, params: RequestParams = {}) =>
+  aiChatSessionControllerCreateSession = (data: CreateSessionDto, params: RequestParams = {}) =>
     this.http.request<CreateSessionVo, any>({
       path: `/api/ai-chat-session/session`,
       method: "POST",
@@ -66,6 +66,23 @@ export class AiChatSessionService<SecurityDataType = unknown> {
       path: `/api/ai-chat-session/session/${id}`,
       method: "DELETE",
       secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags AIChatSession
+   * @name AiChatSessionControllerGetHistoryMessage
+   * @request GET:/ai-chat-session/session/{id}/chat
+   * @secure
+   */
+  aiChatSessionControllerGetHistoryMessage = (id: number, data: GetMessagesDto, params: RequestParams = {}) =>
+    this.http.request<void, any>({
+      path: `/api/ai-chat-session/session/${id}/chat`,
+      method: "GET",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
       ...params,
     });
 }

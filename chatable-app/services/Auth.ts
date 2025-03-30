@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-import { CreateUserDto, CreateUserVo, LoginDto, LoginVo } from "./data-contracts";
+import { CreateUserDto, LoginDto, LoginVo } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class AuthService<SecurityDataType = unknown> {
@@ -19,6 +19,55 @@ export class AuthService<SecurityDataType = unknown> {
     this.http = http;
   }
 
+  /**
+   * No description
+   *
+   * @tags Auth
+   * @name AuthControllerLoginByGithub
+   * @request POST:/auth/github/login
+   * @secure
+   */
+  authControllerLoginByGithub = (params: RequestParams = {}) =>
+    this.http.request<void, any>({
+      path: `/api/auth/github/login`,
+      method: "POST",
+      secure: true,
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Auth
+   * @name AuthControllerLoginByGithubCallback
+   * @request GET:/auth/github/login/callback
+   */
+  authControllerLoginByGithubCallback = (
+    query: {
+      code: string;
+      state: string;
+    },
+    params: RequestParams = {},
+  ) =>
+    this.http.request<LoginVo, any>({
+      path: `/api/auth/github/login/callback`,
+      method: "GET",
+      query: query,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags Auth
+   * @name AuthControllerBindGithub
+   * @request POST:/auth/github/bind
+   */
+  authControllerBindGithub = (params: RequestParams = {}) =>
+    this.http.request<void, any>({
+      path: `/api/auth/github/bind`,
+      method: "POST",
+      ...params,
+    });
   /**
    * No description
    *
@@ -43,12 +92,11 @@ export class AuthService<SecurityDataType = unknown> {
    * @request POST:/auth/register
    */
   authControllerRegister = (data: CreateUserDto, params: RequestParams = {}) =>
-    this.http.request<CreateUserVo, any>({
+    this.http.request<void, any>({
       path: `/api/auth/register`,
       method: "POST",
       body: data,
       type: ContentType.Json,
-      format: "json",
       ...params,
     });
   /**

@@ -9,38 +9,25 @@
  * ---------------------------------------------------------------
  */
 
-export interface LoginDto {
-  username: string;
-  password: string;
-}
-
 export interface LoginVo {
   access_token: string;
 }
 
-export interface CreateUserDto {
-  username: string;
+export interface LoginDto {
+  account: string;
   password: string;
-  nickname: string;
 }
 
-export interface CreateUserVo {
-  id: number;
+export interface CreateUserDto {
+  type: "phone" | "email";
+  account: string;
+  password: string;
   username: string;
-  nickname: string;
-  /** @format date-time */
-  createTime: string;
-  /** @format date-time */
-  updateTime: string;
-}
-
-export interface PostMessageDto {
-  sessionId: string;
-  message: string;
 }
 
 export interface CreateSessionDto {
   modelName: string;
+  initialMessage: string;
 }
 
 export interface CreateSessionVo {
@@ -50,3 +37,9 @@ export interface CreateSessionVo {
 export interface GetSessionsVo {
   sessions: string[];
 }
+
+export interface PostMessageDto {
+  message: string;
+}
+
+export type GetMessagesDto = object;

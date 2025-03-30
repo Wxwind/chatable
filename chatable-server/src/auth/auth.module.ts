@@ -6,11 +6,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
+import { UserThirdAuthModule } from '@/user-third-auth/user-third-auth.module';
 
 @Module({
   providers: [AuthService, JwtStrategy],
   imports: [
     UserModule,
+    UserThirdAuthModule,
     PassportModule,
     JwtModule.register({
       secret: jwtConstants.secret,

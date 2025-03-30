@@ -10,6 +10,9 @@ export class AIChatSession {
   @ManyToOne(() => User, (user) => user.aiChatSessions)
   user: User;
 
+  @Column()
+  title: string;
+
   @OneToMany(() => AIChatMessage, (aiChatMessage) => aiChatMessage.aiChatSession)
   aiChatMessages: AIChatMessage[];
 

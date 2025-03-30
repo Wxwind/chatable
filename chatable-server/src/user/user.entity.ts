@@ -3,7 +3,7 @@ import { AIChatSession } from '@/ai-chat-session/ai-chat-session.entity';
 import { UserThirdAuth } from '@/user-third-auth/user-third-auth.entity';
 
 @Entity()
-@Unique(['phone', 'email', 'githubId'])
+@Unique(['phone', 'email'])
 export class User {
   @PrimaryGeneratedColumn()
   id: number;

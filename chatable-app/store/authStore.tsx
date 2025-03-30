@@ -1,11 +1,9 @@
 import { StoreKeyEnum } from '@/constants';
 import { useStorageState } from '@/hooks/useStorageState';
-import { authService } from '@/services';
-import { LoginDto } from '@/services/data-contracts';
 import { createContext, PropsWithChildren, useContext } from 'react';
 
 interface AuthStore {
-  signIn: (data: LoginDto) => void;
+  signIn: (token: string) => void;
   signOut: () => void;
   token?: string | null;
   isLoading: boolean;
@@ -35,9 +33,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
   return (
     <AuthContext.Provider
       value={{
-        signIn: async (data: LoginDto) => {
-          const result = await authService.authControllerLogin(data);
-          setToken(result.access_token);
+        signIn: (token: string) => {
+          setToken(token);
         },
         signOut: () => {
           setToken(null);

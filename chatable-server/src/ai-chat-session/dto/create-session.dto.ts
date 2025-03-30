@@ -5,4 +5,8 @@ export class CreateSessionDto {
   @ApiProperty()
   @IsNotEmpty()
   modelName: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  initialMessage: string;
 }

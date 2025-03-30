@@ -7,7 +7,7 @@ export enum UserThirdAuthPlatform {
 }
 
 @Entity()
-@Unique(['phone', 'email', 'githubId'])
+@Unique(['openId'])
 export class UserThirdAuth {
   @PrimaryGeneratedColumn()
   id: number;

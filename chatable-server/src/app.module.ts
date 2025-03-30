@@ -21,6 +21,7 @@ import { RequestLoggerInterceptor } from '@/common/interceptor/requestLogger.int
 import { AIChatSessionModule } from './ai-chat-session/ai-chat-session.module';
 import { AIChatMessageModule } from './ai-chat-message/ai-chat-message.module';
 import { UserThirdAuthModule } from './user-third-auth/user-third-auth.module';
+import { OpenAIModule } from './openai/openai.module';
 
 @Module({
   imports: [
@@ -41,17 +42,21 @@ import { UserThirdAuthModule } from './user-third-auth/user-third-auth.module';
       imports: [ClsModule],
       inject: [ClsService],
       useFactory(clsService: ClsService) {
-        const myFormat = format.printf((info) => {
-          const { level, message, context, timestamp } = info;
-          let msg = `[${timestamp}] ${level} [${context}] <${clsService.getId()}>: ${message}`;
-          if (info.stack) {
-            msg += `\n${info.stack as string}`;
-          }
-          return msg;
-        });
+        // const myFormat = format.printf((info) => {
+        //   const { level, message, context, timestamp } = info;
+        //   let msg = `[${timestamp}] ${level} [${context}] <${clsService.getId()}>: ${message}`;
+        //   if (info.stack) {
+        //     msg += `\n${info.stack as string}`;
+        //   }
+        //   return msg;
+        // });
 
         return {
-          format: format.combine(format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), myFormat, format.colorize({ all: true })),
+          format: format.combine(
+            format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+            //  format.colorize({ all: true }),
+            format.json()
+          ),
           transports: [
             new transports.Console(),
             new transports.DailyRotateFile({
@@ -105,6 +110,7 @@ import { UserThirdAuthModule } from './user-third-auth/user-third-auth.module';
     AIChatSessionModule,
     AIChatMessageModule,
     UserThirdAuthModule,
+    OpenAIModule,
   ],
   controllers: [AppController],
   providers: [
