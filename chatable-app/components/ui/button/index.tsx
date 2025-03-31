@@ -10,7 +10,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import AutoView from '../auto-view';
+import { AutoView } from '../auto-view';
 import { WithTheme, WithThemeStyles } from '../style';
 import buttonStyles, { ButtonStyles } from './style';
 

@@ -1,9 +1,15 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
 import { ApiException } from '@/common/apiException';
 import { ErrorCode } from '@/common/api/errorCode';
 import { AccountType, getAccountType } from '@/utils/getAccountType';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtPayLoad } from '@/auth/type';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { User } from './user.entity';
+import { UserJWT } from '@/decorator';
+import { GetProfileVo } from './vo/get-profile.vo';
 
 @Controller('user')
 export class UserController {
@@ -38,5 +44,20 @@ export class UserController {
     }
 
     return;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  @ApiBearerAuth()
+  async getProfile(@UserJWT() jwt: JwtPayLoad): Promise<GetProfileVo> {
+    const user = await this.userService.findById(jwt.userId);
+    if (user === null) {
+      throw new ApiException(ErrorCode.USER_NOT_FOUND);
+    }
+
+    const vo = new GetProfileVo();
+    vo.username = user.username;
+    vo.avatar = user.avatar;
+    return user;
   }
 }

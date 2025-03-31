@@ -99,19 +99,4 @@ export class AuthService<SecurityDataType = unknown> {
       type: ContentType.Json,
       ...params,
     });
-  /**
-   * No description
-   *
-   * @tags Auth
-   * @name AuthControllerGetProfile
-   * @request GET:/auth/profile
-   * @secure
-   */
-  authControllerGetProfile = (params: RequestParams = {}) =>
-    this.http.request<void, any>({
-      path: `/auth/profile`,
-      method: "GET",
-      secure: true,
-      ...params,
-    });
 }

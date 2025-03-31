@@ -27,6 +27,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   input: {
+    flex: 1,
+    minHeight: 24,
     paddingHorizontal: 0,
     paddingVertical: 0,
   },

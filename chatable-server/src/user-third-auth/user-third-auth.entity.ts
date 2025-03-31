@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, Unique, ManyToOne, JoinColumn } from 'typeorm';
-import { IsNotEmpty } from 'class-validator';
 import { User } from '@/user/user.entity';
 
 export enum UserThirdAuthPlatform {
@@ -15,11 +14,9 @@ export class UserThirdAuth {
   @ManyToOne(() => User, (user) => user.userThirdAuths)
   user: User;
 
-  @IsNotEmpty()
   @Column({ type: 'enum', enum: UserThirdAuthPlatform })
   platform: UserThirdAuthPlatform;
 
-  @IsNotEmpty()
   @Column()
   openId: string;
 

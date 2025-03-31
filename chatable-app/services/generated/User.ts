@@ -34,4 +34,19 @@ export class UserService<SecurityDataType = unknown> {
       type: ContentType.Json,
       ...params,
     });
+  /**
+   * No description
+   *
+   * @tags User
+   * @name UserControllerGetProfile
+   * @request GET:/user/profile
+   * @secure
+   */
+  userControllerGetProfile = (params: RequestParams = {}) =>
+    this.http.request<void, any>({
+      path: `/user/profile`,
+      method: "GET",
+      secure: true,
+      ...params,
+    });
 }

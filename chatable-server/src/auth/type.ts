@@ -8,9 +8,19 @@ export type JwtPayLoad = {
 
 export type GithubProfile = {
   id: string;
+  // 用户名
   username: string;
-  emails: { value: string }[];
-  avatar_url: string;
+  // 头像
+  photos: { value: string }[];
+  // 主页
+  profileUrl: string;
+  _json: {
+    // 似乎等于username
+    login: string;
+    // 等于外层的id但是是number
+    id: number;
+    avatar_url: string;
+  };
 };
 
 export type GithubPayLoad = {

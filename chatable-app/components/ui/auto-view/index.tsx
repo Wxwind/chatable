@@ -3,10 +3,10 @@ import { StyleProp, Text, TextProps, TextStyle, View, ViewProps, ViewStyle } fro
 
 export interface AutoViewProps extends Omit<ViewProps & TextProps, 'style'> {
   children?: React.ReactNode;
-  style?: StyleProp<ViewStyle> | StyleProp<TextStyle>;
+  style?: StyleProp<ViewStyle | TextStyle>;
 }
 
-export default function AutoView(props: AutoViewProps) {
+export function AutoView(props: AutoViewProps) {
   const { children, style, ...restProps } = props;
 
   if (Array.isArray(children)) {

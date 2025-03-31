@@ -7,7 +7,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiProduces } from '@nestjs
 import { CreateSessionVo } from './vo/create-session-vo';
 import { GetSessionsVo } from './vo/get-sessions-vo';
 import { PostMessageDto } from './dto/post-message.dto';
-import { User } from '@/decorator';
+import { UserJWT } from '@/decorator';
 import { AIChatMessageService } from '@/ai-chat-message/ai-chat-message.service';
 import { GetMessagesDto } from '@/ai-chat-message/dto/get-messages.dto';
 import { GetMessagesVo } from '@/ai-chat-message/vo/get-messages.vo';
@@ -35,7 +35,7 @@ export class AIChatSessionController {
 
   @Post('session')
   @ApiOkResponse({ type: CreateSessionVo })
-  async createSession(@Body() dto: CreateSessionDto, @User() user: JwtPayLoad): Promise<CreateSessionVo> {
+  async createSession(@Body() dto: CreateSessionDto, @UserJWT() user: JwtPayLoad): Promise<CreateSessionVo> {
     const userId = user.userId;
 
     const title = await this.openAIService.generateTitle(dto.initialMessage);
@@ -47,7 +47,7 @@ export class AIChatSessionController {
 
   @Get('sessions')
   @ApiOkResponse({ type: GetSessionsVo })
-  async getSessions(@User() user: JwtPayLoad): Promise<GetSessionsVo> {
+  async getSessions(@UserJWT() user: JwtPayLoad): Promise<GetSessionsVo> {
     const userId = user.userId;
     const sessions = await this.aiChatSessionService.findAllByUserId(userId);
 
@@ -60,7 +60,7 @@ export class AIChatSessionController {
   }
 
   @Delete('session/:id')
-  async removeSession(@Param('id') sessionId: number, @User() user: JwtPayLoad) {
+  async removeSession(@Param('id') sessionId: number, @UserJWT() user: JwtPayLoad) {
     const session = await this.aiChatSessionService.verifySessionOwnership(user.userId, sessionId);
     await this.aiChatSessionService.remove(sessionId);
     return;
@@ -72,7 +72,7 @@ export class AIChatSessionController {
     description: '返回消息流',
   })
   @ApiProduces('text/event-stream')
-  async postMessage(@Param('id') sessionId: number, @Body() dto: PostMessageDto, @User() user: JwtPayLoad) {
+  async postMessage(@Param('id') sessionId: number, @Body() dto: PostMessageDto, @UserJWT() user: JwtPayLoad) {
     const session = await this.aiChatSessionService.verifySessionOwnership(user.userId, sessionId);
     const history: { message: string; sender: AIChatMessageSender }[] = await this.aiChatMessageService.findMessagesBySessionIdWithPagination(
       session,
@@ -142,7 +142,7 @@ export class AIChatSessionController {
   }
 
   @Get('session/:id/chat')
-  async getHistoryMessage(@Param('id') sessionId: number, @Body() dto: GetMessagesDto, @User() user: JwtPayLoad): Promise<GetMessagesVo> {
+  async getHistoryMessage(@Param('id') sessionId: number, @Body() dto: GetMessagesDto, @UserJWT() user: JwtPayLoad): Promise<GetMessagesVo> {
     const session = await this.aiChatSessionService.verifySessionOwnership(user.userId, sessionId);
     const res = await this.aiChatMessageService.findMessagesBySessionIdWithPagination(session, dto.page, dto.limit);
 

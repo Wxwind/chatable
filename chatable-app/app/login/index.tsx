@@ -31,7 +31,7 @@ const generateState = async () => {
 };
 
 export default function Login() {
-  const [loginDto, setLogonDto] = useImmer<LoginDto>({} as LoginDto);
+  const [loginDto, setLogonDto] = useImmer<LoginDto>({ account: '', password: '' });
   const { signIn } = useAuthContext();
   const router = useRouter();
   const { run, loading } = useRequest(authService.authControllerLogin, {
@@ -57,23 +57,23 @@ export default function Login() {
       const result = await promptAsync({});
       console.log('登录', result.type);
 
-      // if (result.type === 'success') {
-      //   const { code, state } = result.params;
-      //   if (!request) {
-      //     console.error(`request is null`);
-      //     return;
-      //   }
-      //   if (request.state !== state) {
-      //     console.error(`invalid state ${request.state}`);
-      //     return;
-      //   }
-      //   const res = await authService.authControllerLoginByGithubCallback({ code, state });
-      //   signIn(res.access_token);
-      //   router.replace('/');
-      // } else if (result.type === 'error') {
-      //   console.error(result.error);
-      //   return;
-      // }
+      if (result.type === 'success') {
+        const { code, state } = result.params;
+        if (!request) {
+          console.error(`request is null`);
+          return;
+        }
+        if (request.state !== state) {
+          console.error(`invalid state ${request.state}`);
+          return;
+        }
+        const res = await authService.authControllerLoginByGithubCallback({ code, state });
+        signIn(res.access_token);
+        router.replace('/');
+      } else if (result.type === 'error') {
+        console.error(result.error);
+        return;
+      }
     } catch (err) {
       console.error((err as Error).message);
     }

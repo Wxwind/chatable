@@ -42,13 +42,9 @@ export class AIChatSessionService {
   }
 
   async findAllByUserId(userId: number): Promise<AIChatSession[]> {
-    const user = await this.userService.findById(userId);
-    if (!user) {
-      throw new ApiException(ErrorCode.USER_NOT_FOUND);
-    }
     const res = await this.aiChatSessionRepo.find({
       where: {
-        user,
+        user: { id: userId },
       },
       withDeleted: false,
     });

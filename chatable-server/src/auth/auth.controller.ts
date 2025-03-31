@@ -7,12 +7,12 @@ import { CreateUserDto } from '@/user/dto/create-user.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDto } from '@/auth/dto/login.dto';
 import { JwtPayLoad, RequestWithGithub } from './type';
-import { ApiBearerAuth, ApiOAuth2, ApiOkResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOAuth2, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 import { ApiException } from '@/common/apiException';
 import { ErrorCode } from '@/common/api/errorCode';
 import { AccountType, getAccountType } from '@/utils/getAccountType';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '@/decorator';
+import { UserJWT } from '@/decorator';
 import { GithubLoginCallbackQuery } from './dto/github-login-callback.query';
 
 @Controller('auth')
@@ -40,7 +40,7 @@ export class AuthController {
       const savedUser = await this.authService.findOrCreateUserByGitHub({
         githubId: profile.id,
         username: profile.username,
-        avatar: profile.avatar_url,
+        avatar: profile._json.avatar_url,
       });
 
       const res = await this.authService.login(savedUser);
@@ -53,7 +53,7 @@ export class AuthController {
   @Post('github/bind')
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse()
-  async bindGithub(@User() user: JwtPayLoad) {
+  async bindGithub(@UserJWT() user: JwtPayLoad) {
     // TODO
   }
 
@@ -92,12 +92,5 @@ export class AuthController {
   async register(@Body() body: CreateUserDto): Promise<null> {
     const user = await this.userService.create(body);
     return null;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  @ApiBearerAuth()
-  getProfile(@User() user: JwtPayLoad) {
-    return user;
   }
 }

@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-import AutoView from '@/components/ui/auto-view';
+import { AutoView } from '@/components/ui';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -18,14 +18,16 @@ export default function LoginCallbackGitHub() {
     try {
       const code = params.code;
       console.log('code', code, params);
-      if (code) {
-        authService.authControllerLoginByGithubCallback({ code, state: '' }).then((res) => {
-          signIn(res.access_token);
-          router.replace('/'); // 跳转回首页
-        });
-      } else {
-        router.replace('/login'); // 无 code 则返回登录页
-      }
+      // if (code) {
+      //   authService.authControllerLoginByGithubCallback({ code, state: '' }).then((res) => {
+      //     console.log('set token');
+
+      //     signIn(res.access_token);
+      //     router.replace('/'); // 跳转回首页
+      //   });
+      // } else {
+      //   router.replace('/login'); // 无 code 则返回登录页
+      // }
     } catch (err) {
       console.error((err as Error).message);
     }

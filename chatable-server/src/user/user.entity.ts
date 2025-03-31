@@ -11,16 +11,16 @@ export class User {
   @Column({ length: 50 })
   username: string;
 
-  @Column()
+  @Column({ nullable: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
   @Column()
   avatar: string;
 
-  @Column({ length: 60 })
+  @Column({ length: 60, nullable: true })
   password: string;
 
   @CreateDateColumn({
