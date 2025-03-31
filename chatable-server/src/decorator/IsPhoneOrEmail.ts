@@ -9,7 +9,7 @@ export function IsPhoneOrEmail(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any, args: ValidationArguments) {
-          return typeof value === 'string' && (isPhoneNumber(value) || isEmail(value));
+          return typeof value === 'string' && (isPhoneNumber(value, 'CN') || isEmail(value));
         },
         defaultMessage(args: ValidationArguments) {
           return `${args.property} 必须是合法的手机号或邮箱地址`;

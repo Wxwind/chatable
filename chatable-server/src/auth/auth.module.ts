@@ -7,9 +7,10 @@ import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UserThirdAuthModule } from '@/user-third-auth/user-third-auth.module';
+import { GithubStrategy } from './oauth-github.strategy';
 
 @Module({
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, GithubStrategy],
   imports: [
     UserModule,
     UserThirdAuthModule,

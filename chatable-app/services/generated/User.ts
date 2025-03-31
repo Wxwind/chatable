@@ -9,10 +9,10 @@
  * ---------------------------------------------------------------
  */
 
-import { PostMessageDto } from "./data-contracts";
+import { CreateUserDto } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
-export class AiService<SecurityDataType = unknown> {
+export class UserService<SecurityDataType = unknown> {
   http: HttpClient<SecurityDataType>;
 
   constructor(http: HttpClient<SecurityDataType>) {
@@ -22,32 +22,15 @@ export class AiService<SecurityDataType = unknown> {
   /**
    * No description
    *
-   * @tags AI
-   * @name AiControllerGetChatHistory
-   * @request GET:/ai/chat/history-messages
-   * @secure
+   * @tags User
+   * @name UserControllerRegister
+   * @request POST:/user
    */
-  aiControllerGetChatHistory = (params: RequestParams = {}) =>
+  userControllerRegister = (data: CreateUserDto, params: RequestParams = {}) =>
     this.http.request<void, any>({
-      path: `/api/ai/chat/history-messages`,
-      method: "GET",
-      secure: true,
-      ...params,
-    });
-  /**
-   * No description
-   *
-   * @tags AI
-   * @name AiControllerChat
-   * @request POST:/ai/chat
-   * @secure
-   */
-  aiControllerChat = (data: PostMessageDto, params: RequestParams = {}) =>
-    this.http.request<void, any>({
-      path: `/api/ai/chat`,
+      path: `/user`,
       method: "POST",
       body: data,
-      secure: true,
       type: ContentType.Json,
       ...params,
     });

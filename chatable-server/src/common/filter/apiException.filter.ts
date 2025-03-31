@@ -19,7 +19,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
       msg: ErrorCodeMsg[code],
     };
 
-    this.logger.error(exception);
+    this.logger.error(exception.message, exception.stack);
     resp.status(HttpStatus.INTERNAL_SERVER_ERROR).json(body);
   }
 }

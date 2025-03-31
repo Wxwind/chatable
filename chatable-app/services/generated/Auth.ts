@@ -29,7 +29,7 @@ export class AuthService<SecurityDataType = unknown> {
    */
   authControllerLoginByGithub = (params: RequestParams = {}) =>
     this.http.request<void, any>({
-      path: `/api/auth/github/login`,
+      path: `/auth/github/login`,
       method: "POST",
       secure: true,
       ...params,
@@ -49,7 +49,7 @@ export class AuthService<SecurityDataType = unknown> {
     params: RequestParams = {},
   ) =>
     this.http.request<LoginVo, any>({
-      path: `/api/auth/github/login/callback`,
+      path: `/auth/github/login/callback`,
       method: "GET",
       query: query,
       format: "json",
@@ -64,7 +64,7 @@ export class AuthService<SecurityDataType = unknown> {
    */
   authControllerBindGithub = (params: RequestParams = {}) =>
     this.http.request<void, any>({
-      path: `/api/auth/github/bind`,
+      path: `/auth/github/bind`,
       method: "POST",
       ...params,
     });
@@ -77,7 +77,7 @@ export class AuthService<SecurityDataType = unknown> {
    */
   authControllerLogin = (data: LoginDto, params: RequestParams = {}) =>
     this.http.request<LoginVo, any>({
-      path: `/api/auth/login`,
+      path: `/auth/login`,
       method: "POST",
       body: data,
       type: ContentType.Json,
@@ -93,7 +93,7 @@ export class AuthService<SecurityDataType = unknown> {
    */
   authControllerRegister = (data: CreateUserDto, params: RequestParams = {}) =>
     this.http.request<void, any>({
-      path: `/api/auth/register`,
+      path: `/auth/register`,
       method: "POST",
       body: data,
       type: ContentType.Json,
@@ -109,7 +109,7 @@ export class AuthService<SecurityDataType = unknown> {
    */
   authControllerGetProfile = (params: RequestParams = {}) =>
     this.http.request<void, any>({
-      path: `/api/auth/profile`,
+      path: `/auth/profile`,
       method: "GET",
       secure: true,
       ...params,

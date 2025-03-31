@@ -1,14 +1,12 @@
-import axios, { type AxiosResponse, type AxiosRequestConfig } from 'axios';
-import { HttpClient } from './http-client';
-import { AiService } from './Ai';
-import { UserService } from './User';
-import { AuthService } from './Auth';
-import { AiChatSessionService } from './AiChatSession';
+import type { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { ResponseInfo } from './type';
 import { router } from 'expo-router';
 import { StoreKeyEnum } from '@/constants';
-import * as SecureStore from 'expo-secure-store';
 import { getStorageStateExternal } from '@/hooks/useStorageState';
+import { AiChatSessionService } from './generated/AiChatSession';
+import { AuthService } from './generated/Auth';
+import { HttpClient } from './generated/http-client';
+import { UserService } from './generated/User';
 
 /**
  * @type Q post请求的数据类型
@@ -26,7 +24,6 @@ const httpClient = new HttpClient({
 });
 
 const axiosInstance = httpClient.instance;
-export const aiService = new AiService(httpClient);
 export const userService = new UserService(httpClient);
 export const authService = new AuthService(httpClient);
 export const aiChatSessionService = new AiChatSessionService(httpClient);
@@ -102,6 +99,6 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    return Promise.reject(new Error(error.message));
+    return Promise.reject(error);
   }
 );

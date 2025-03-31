@@ -53,15 +53,29 @@ export default function Login() {
   );
 
   const handleLoginByGitHub = async () => {
-    const result = await promptAsync({});
-    console.log('登录', result.type);
+    try {
+      const result = await promptAsync({});
+      console.log('登录', result.type);
 
-    if (result.type === 'success') {
-      // Retrieve the JWT token and decode it
-      // const { code } = result.params;
-      // const res = await authService.authControllerLoginByGithubCallback({ code, state: '' });
-      // signIn(res.access_token);
-      // router.replace('/');
+      // if (result.type === 'success') {
+      //   const { code, state } = result.params;
+      //   if (!request) {
+      //     console.error(`request is null`);
+      //     return;
+      //   }
+      //   if (request.state !== state) {
+      //     console.error(`invalid state ${request.state}`);
+      //     return;
+      //   }
+      //   const res = await authService.authControllerLoginByGithubCallback({ code, state });
+      //   signIn(res.access_token);
+      //   router.replace('/');
+      // } else if (result.type === 'error') {
+      //   console.error(result.error);
+      //   return;
+      // }
+    } catch (err) {
+      console.error((err as Error).message);
     }
   };
 
@@ -75,7 +89,7 @@ export default function Login() {
         placeholder="手机号/邮箱"
         value={loginDto.account}
         onChangeText={(value) => {
-          setLogonDto((draft) => (draft.account = value));
+          setLogonDto((draft) => void (draft.account = value));
         }}
         onSubmitEditing={() => {}}
       />
@@ -85,7 +99,7 @@ export default function Login() {
         placeholder="密码"
         value={loginDto.password}
         onChangeText={(value) => {
-          setLogonDto((draft) => (draft.password = value));
+          setLogonDto((draft) => void (draft.password = value));
         }}
       />
 
@@ -93,7 +107,7 @@ export default function Login() {
         type="primary"
         loading={loading}
         style={{ width: '100%' }}
-        disabled={loading}
+        disabled={loading || !request}
         onPress={() => {
           run(loginDto);
         }}

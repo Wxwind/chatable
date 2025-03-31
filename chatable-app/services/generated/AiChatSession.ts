@@ -29,7 +29,7 @@ export class AiChatSessionService<SecurityDataType = unknown> {
    */
   aiChatSessionControllerCreateSession = (data: CreateSessionDto, params: RequestParams = {}) =>
     this.http.request<CreateSessionVo, any>({
-      path: `/api/ai-chat-session/session`,
+      path: `/ai-chat-session/session`,
       method: "POST",
       body: data,
       secure: true,
@@ -47,7 +47,7 @@ export class AiChatSessionService<SecurityDataType = unknown> {
    */
   aiChatSessionControllerGetSessions = (params: RequestParams = {}) =>
     this.http.request<GetSessionsVo, any>({
-      path: `/api/ai-chat-session/sessions`,
+      path: `/ai-chat-session/sessions`,
       method: "GET",
       secure: true,
       format: "json",
@@ -63,7 +63,7 @@ export class AiChatSessionService<SecurityDataType = unknown> {
    */
   aiChatSessionControllerRemoveSession = (id: number, params: RequestParams = {}) =>
     this.http.request<void, any>({
-      path: `/api/ai-chat-session/session/${id}`,
+      path: `/ai-chat-session/session/${id}`,
       method: "DELETE",
       secure: true,
       ...params,
@@ -78,7 +78,7 @@ export class AiChatSessionService<SecurityDataType = unknown> {
    */
   aiChatSessionControllerGetHistoryMessage = (id: number, data: GetMessagesDto, params: RequestParams = {}) =>
     this.http.request<void, any>({
-      path: `/api/ai-chat-session/session/${id}/chat`,
+      path: `/ai-chat-session/session/${id}/chat`,
       method: "GET",
       body: data,
       secure: true,

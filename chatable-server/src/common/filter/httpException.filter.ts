@@ -16,7 +16,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       code: status,
       msg: exception.message,
     };
-    this.logger.error(exception);
+    this.logger.error(exception.message, exception.stack);
     resp.status(status).json(body);
   }
 }
