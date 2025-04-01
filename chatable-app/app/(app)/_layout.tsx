@@ -1,11 +1,13 @@
-import { Redirect, Slot, Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { Redirect, Slot } from 'expo-router';
 import { Text } from 'react-native';
-import { AuthProvider, useAuthContext } from '@/store';
+import { useAuthContext } from '@/store';
 import { AutoView } from '@/components/core';
+import Drawer from '@/components/core/drawer';
+import { useGetSessions } from '@/hooks/services';
 
 export default function AppLayout() {
   const { token, isLoading } = useAuthContext();
+  const sessions = useGetSessions();
 
   if (isLoading) {
     return <Text>Loading...</Text>;
@@ -19,6 +21,7 @@ export default function AppLayout() {
 
   return (
     <AutoView>
+      <Drawer sidebar={<AutoView>123</AutoView>} />
       <Slot />
     </AutoView>
   );

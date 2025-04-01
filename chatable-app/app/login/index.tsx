@@ -18,16 +18,19 @@ type LoginDto = {
 };
 
 const clientId = process.env.EXPO_PUBLIC_GITHUB_CLIENT_ID;
-const authUrl = `https://github.com/login/oauth/authorize`;
+
+const discovery = {
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint: `https://github.com/settings/connections/applications/${clientId}`,
+};
+
 const redirectUri = AuthSession.makeRedirectUri({
-  path: 'http://localhost:8081/login/callback-github',
-  native: 'chatable://login/callback-github',
+  scheme: 'chatable',
+  path: 'login/callback-github',
 });
 
-const generateState = async () => {
-  const randomBytes = await Crypto.getRandomBytesAsync(16);
-  return Buffer.from(randomBytes).toString('hex');
-};
+console.log('redirectUri', redirectUri);
 
 export default function Login() {
   const [loginDto, setLogonDto] = useImmer<LoginDto>({ account: '', password: '' });
@@ -47,13 +50,16 @@ export default function Login() {
       clientId: clientId,
       scopes: ['read:user'],
       redirectUri: redirectUri,
+      state: Crypto.randomUUID(),
     },
-    { authorizationEndpoint: authUrl }
+    discovery
   );
 
   const handleLoginByGitHub = async () => {
     try {
-      const result = await promptAsync({});
+      const result = await promptAsync({
+        createTask: false,
+      });
       console.log('登录', result.type);
 
       if (result.type === 'success') {
@@ -115,7 +121,7 @@ export default function Login() {
       </Button>
 
       <TouchableOpacity onPress={handleLoginByGitHub}>
-        <AntDesignIcon name="github" size={14}></AntDesignIcon>
+        <AntDesignIcon name="github" size={18}></AntDesignIcon>
       </TouchableOpacity>
     </ThemedView>
   );
