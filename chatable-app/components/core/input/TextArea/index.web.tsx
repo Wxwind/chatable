@@ -1,33 +1,25 @@
-import React, { forwardRef, memo, useMemo, useState } from 'react'
-import { TextInput } from 'react-native'
-import Input from '../Input'
-import { TextAreaProps } from '../PropsType'
-import TextAreaStyle from '../style/textarea'
+import React, { forwardRef, memo, useMemo, useState } from 'react';
+import { TextInput } from 'react-native';
+import { Input } from '../Input';
+import { TextAreaProps } from '../PropsType';
+import TextAreaStyle from '../style/textarea';
 
-const TextArea = forwardRef<TextInput, TextAreaProps>((props, ref) => {
-  const {
-    autoSize,
-    rows,
-    numberOfLines,
-    onLayout,
-    onChange,
-    onContentSizeChange,
-    ...restProps
-  } = props
+const InternalTextArea = forwardRef<TextInput, TextAreaProps>((props, ref) => {
+  const { autoSize, rows, numberOfLines, onLayout, onChange, onContentSizeChange, ...restProps } = props;
 
   // ============================== AutoSize ==============================
   const [minRows, maxRows] = useMemo(() => {
     if (typeof autoSize === 'object') {
-      return [Number(autoSize.minRows || 0), Number(autoSize.maxRows || 0)]
+      return [Number(autoSize.minRows || 0), Number(autoSize.maxRows || 0)];
     }
 
-    return [0, 0]
-  }, [autoSize])
+    return [0, 0];
+  }, [autoSize]);
 
   // ============================== onLayout ==============================
-  const [styleHeight, setStyleHeight] = useState<number>(0)
-  const [minHeight, setMinHeight] = useState<number>(0)
-  const [maxHeight, setMaxHeight] = useState<number>(0)
+  const [styleHeight, setStyleHeight] = useState<number>(0);
+  const [minHeight, setMinHeight] = useState<number>(0);
+  const [maxHeight, setMaxHeight] = useState<number>(0);
 
   // ============================== rest TextAreaProps ==============================
   const restTextAreaProps: TextAreaProps = useMemo(() => {
@@ -35,41 +27,41 @@ const TextArea = forwardRef<TextInput, TextAreaProps>((props, ref) => {
     if (!autoSize) {
       return {
         numberOfLines: numberOfLines || rows || 2,
-      }
+      };
     }
     // `autoSize={{maxRows:5}}` to get maxHeight
     if (maxRows > 0 && maxRows > minRows && maxHeight === 0) {
       return {
         numberOfLines: maxRows,
         onLayout: (e) => {
-          onLayout?.(e)
-          const h = e.nativeEvent.layout.height
-          setMaxHeight(h)
+          onLayout?.(e);
+          const h = e.nativeEvent.layout.height;
+          setMaxHeight(h);
         },
-      }
+      };
     }
 
     return {
       numberOfLines: minRows || 1,
       onContentSizeChange: (e) => {
-        onContentSizeChange?.(e)
-        setStyleHeight(e.nativeEvent.contentSize.height)
+        onContentSizeChange?.(e);
+        setStyleHeight(e.nativeEvent.contentSize.height);
       },
       onLayout: (e) => {
-        onLayout?.(e)
-        const h = e.nativeEvent.layout.height
+        onLayout?.(e);
+        const h = e.nativeEvent.layout.height;
 
         // `autoSize={{minRows:2}}`
         if (minHeight === 0 && minRows > 0) {
-          setMinHeight(h)
+          setMinHeight(h);
         }
       },
       onChange: (e: any) => {
-        onChange?.(e)
-        e.target.style.height = 0
-        const scrollHeight = e.target.scrollHeight
-        e.target.style.height = `${scrollHeight}px`
-        setStyleHeight(scrollHeight)
+        onChange?.(e);
+        e.target.style.height = 0;
+        const scrollHeight = e.target.scrollHeight;
+        e.target.style.height = `${scrollHeight}px`;
+        setStyleHeight(scrollHeight);
       },
       style: [
         {
@@ -87,7 +79,7 @@ const TextArea = forwardRef<TextInput, TextAreaProps>((props, ref) => {
         },
         props.style,
       ],
-    }
+    };
   }, [
     autoSize,
     maxHeight,
@@ -103,19 +95,11 @@ const TextArea = forwardRef<TextInput, TextAreaProps>((props, ref) => {
     props.value,
     rows,
     styleHeight,
-  ])
+  ]);
 
-  return (
-    <Input
-      themeStyles={TextAreaStyle}
-      {...restProps}
-      {...restTextAreaProps}
-      multiline={true}
-      ref={ref}
-    />
-  )
-})
+  return <Input themeStyles={TextAreaStyle} {...restProps} {...restTextAreaProps} multiline={true} ref={ref} />;
+});
 
-TextArea.displayName = 'Input.TextArea'
+InternalTextArea.displayName = 'Input.TextArea';
 
-export default memo(TextArea)
+export const TextArea = memo(InternalTextArea);

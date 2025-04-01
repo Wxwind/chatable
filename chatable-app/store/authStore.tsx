@@ -1,5 +1,7 @@
 import { StoreKeyEnum } from '@/constants';
+import { queryKeys } from '@/constants/queryKeys';
 import { useStorageState } from '@/hooks/useStorageState';
+import { useQueryClient } from '@tanstack/react-query';
 import { createContext, PropsWithChildren, useContext } from 'react';
 
 interface AuthStore {
@@ -29,6 +31,7 @@ export function useAuthContext() {
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [[isLoading, token], setToken] = useStorageState(StoreKeyEnum.Token);
+  const queryClient = useQueryClient();
 
   return (
     <AuthContext.Provider
@@ -38,6 +41,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         },
         signOut: () => {
           setToken(null);
+          queryClient.invalidateQueries({ queryKey: queryKeys.user() });
         },
         token,
         isLoading,

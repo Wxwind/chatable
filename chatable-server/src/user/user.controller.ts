@@ -6,7 +6,7 @@ import { ErrorCode } from '@/common/api/errorCode';
 import { AccountType, getAccountType } from '@/utils/getAccountType';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { JwtPayLoad } from '@/auth/type';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { User } from './user.entity';
 import { UserJWT } from '@/decorator';
 import { GetProfileVo } from './vo/get-profile.vo';
@@ -49,6 +49,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiBearerAuth()
+  @ApiResponse({ type: GetProfileVo })
   async getProfile(@UserJWT() jwt: JwtPayLoad): Promise<GetProfileVo> {
     const user = await this.userService.findById(jwt.userId);
     if (user === null) {

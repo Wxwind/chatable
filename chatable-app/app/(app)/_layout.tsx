@@ -1,7 +1,8 @@
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, Slot, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Text } from 'react-native';
 import { AuthProvider, useAuthContext } from '@/store';
+import { AutoView } from '@/components/core';
 
 export default function AppLayout() {
   const { token, isLoading } = useAuthContext();
@@ -17,11 +18,8 @@ export default function AppLayout() {
   }
 
   return (
-    <>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </>
+    <AutoView>
+      <Slot />
+    </AutoView>
   );
 }

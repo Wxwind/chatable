@@ -1,12 +1,17 @@
-import { AutoView } from './ui';
+import { useState } from 'react';
+import { AutoView, Input } from './core';
 
 interface ChatInputBoxProps {
-  value: string;
   onSubmit: (value: string) => void;
 }
 
 export function ChatInputBox(props: ChatInputBoxProps) {
   const {} = props;
+  const [inputMsg, setInputMsg] = useState<string>('');
 
-  return <AutoView>ChatInputBox</AutoView>;
+  return (
+    <AutoView>
+      <Input />
+    </AutoView>
+  );
 }

@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
-import { AutoView } from '@/components/ui';
+import { AutoView } from '@/components/core';
 
 WebBrowser.maybeCompleteAuthSession();
 

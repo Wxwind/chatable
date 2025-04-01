@@ -1,3 +1,3 @@
 export * from './Public';
 export * from './IsPhoneOrEmail';
-export * from './User';
+export * from './UserJWT';

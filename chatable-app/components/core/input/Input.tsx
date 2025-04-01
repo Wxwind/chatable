@@ -1,5 +1,5 @@
 import useMergedState from 'rc-util/lib/hooks/useMergedState';
-import React, { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   Keyboard,
   NativeSyntheticEvent,
@@ -282,11 +282,4 @@ const InternalInput: React.ForwardRefRenderFunction<TextInput, InputProps> = (pr
   );
 };
 
-const Input = React.forwardRef<TextInput, InputProps>(InternalInput) as ((
-  props: React.PropsWithChildren<InputProps> & React.RefAttributes<TextInput>
-) => React.ReactElement) &
-  Pick<React.FC, 'displayName'>;
-
-Input.displayName = 'Input';
-
-export default React.memo(Input);
+export const Input = React.memo(React.forwardRef<TextInput, InputProps>(InternalInput));

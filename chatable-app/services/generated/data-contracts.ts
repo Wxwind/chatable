@@ -42,4 +42,8 @@ export interface PostMessageDto {
   message: string;
 }
 
-export type GetMessagesDto = object;
+export interface GetMessagesDto {
+  sessionId: number;
+  page: number;
+  limit: number;
+}
