@@ -1,4 +1,4 @@
-export * from './Input';
+export * from './input';
 export * from './button';
 export * from './auto-view';
 export * from './white-space';
