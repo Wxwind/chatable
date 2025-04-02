@@ -6,6 +6,10 @@ export class GetSessionsVo {
 }
 
 export class Sessions {
+  @ApiProperty()
   id: number;
+  @ApiProperty()
+  title: string;
+  @ApiProperty()
   modelName: string;
 }

@@ -41,7 +41,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         },
         signOut: () => {
           setToken(null);
-          queryClient.invalidateQueries({ queryKey: queryKeys.user() });
+          queryClient.resetQueries({ queryKey: queryKeys.user() });
         },
         token,
         isLoading,

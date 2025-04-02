@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-import { CreateUserDto } from "./data-contracts";
+import { CreateUserDto, GetProfileVo } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class UserService<SecurityDataType = unknown> {
@@ -43,7 +43,7 @@ export class UserService<SecurityDataType = unknown> {
    * @secure
    */
   userControllerGetProfile = (params: RequestParams = {}) =>
-    this.http.request<void, any>({
+    this.http.request<any, GetProfileVo>({
       path: `/user/profile`,
       method: "GET",
       secure: true,

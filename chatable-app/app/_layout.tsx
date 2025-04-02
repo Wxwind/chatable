@@ -16,13 +16,12 @@ SplashScreen.preventAutoHideAsync();
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
-      retryOnMount: false,
-      retry: false,
+      refetchOnWindowFocus: true,
+      retry: 3,
       staleTime: Infinity,
     },
     mutations: {
-      retry: false,
+      retry: 3,
     },
   },
 });

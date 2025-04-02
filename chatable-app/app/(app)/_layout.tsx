@@ -7,7 +7,6 @@ import { useGetSessions } from '@/hooks/services';
 
 export default function AppLayout() {
   const { token, isLoading } = useAuthContext();
-  const sessions = useGetSessions();
 
   if (isLoading) {
     return <Text>Loading...</Text>;

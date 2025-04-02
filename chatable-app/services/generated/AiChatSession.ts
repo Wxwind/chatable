@@ -9,7 +9,7 @@
  * ---------------------------------------------------------------
  */
 
-import { CreateSessionDto, CreateSessionVo, GetMessagesDto, GetSessionsVo } from "./data-contracts";
+import { AIChatMessageBase, CreateSessionDto, CreateSessionVo, GetMessagesDto, Sessions } from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class AiChatSessionService<SecurityDataType = unknown> {
@@ -46,7 +46,7 @@ export class AiChatSessionService<SecurityDataType = unknown> {
    * @secure
    */
   aiChatSessionControllerGetSessions = (params: RequestParams = {}) =>
-    this.http.request<GetSessionsVo, any>({
+    this.http.request<Sessions[], any>({
       path: `/ai-chat-session/sessions`,
       method: "GET",
       secure: true,
@@ -77,12 +77,13 @@ export class AiChatSessionService<SecurityDataType = unknown> {
    * @secure
    */
   aiChatSessionControllerGetHistoryMessage = (id: number, data: GetMessagesDto, params: RequestParams = {}) =>
-    this.http.request<void, any>({
+    this.http.request<AIChatMessageBase[], any>({
       path: `/ai-chat-session/session/${id}/chat`,
       method: "GET",
       body: data,
       secure: true,
       type: ContentType.Json,
+      format: "json",
       ...params,
     });
 }

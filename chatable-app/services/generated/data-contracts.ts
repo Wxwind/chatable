@@ -25,6 +25,11 @@ export interface CreateUserDto {
   username: string;
 }
 
+export interface GetProfileVo {
+  username: string;
+  avatar: string;
+}
+
 export interface CreateSessionDto {
   modelName: string;
   initialMessage: string;
@@ -34,8 +39,10 @@ export interface CreateSessionVo {
   sessionId: number;
 }
 
-export interface GetSessionsVo {
-  sessions: string[];
+export interface Sessions {
+  id: number;
+  title: string;
+  modelName: string;
 }
 
 export interface PostMessageDto {
@@ -46,4 +53,9 @@ export interface GetMessagesDto {
   sessionId: number;
   page: number;
   limit: number;
+}
+
+export interface AIChatMessageBase {
+  sender: "user" | "ai" | "system";
+  message: string;
 }
