@@ -44,7 +44,7 @@ export class UserService {
     return user;
   }
 
-  async create(dto: CreateUserDto): Promise<User> {
+  async create(dto: Partial<User>): Promise<User> {
     const user = this.userRepo.create(dto);
     user.password = await CryptoUtils.encrypt(user.password);
     const newUser = await this.userRepo.save(user);

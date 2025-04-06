@@ -9,7 +9,15 @@
  * ---------------------------------------------------------------
  */
 
-import { AIChatMessageBase, CreateSessionDto, CreateSessionVo, GetMessagesDto, Sessions } from "./data-contracts";
+import {
+  AIChatMessageBase,
+  ChatImmeVo,
+  CreateSessionDto,
+  CreateSessionVo,
+  GetMessagesDto,
+  PostMessageDto,
+  Sessions,
+} from "./data-contracts";
 import { ContentType, HttpClient, RequestParams } from "./http-client";
 
 export class AiChatSessionService<SecurityDataType = unknown> {
@@ -80,6 +88,24 @@ export class AiChatSessionService<SecurityDataType = unknown> {
     this.http.request<AIChatMessageBase[], any>({
       path: `/ai-chat-session/session/${id}/chat`,
       method: "GET",
+      body: data,
+      secure: true,
+      type: ContentType.Json,
+      format: "json",
+      ...params,
+    });
+  /**
+   * No description
+   *
+   * @tags AIChatSession
+   * @name AiChatSessionControllerPostMessageImmediately
+   * @request POST:/ai-chat-session/session/{id}/chat_imme
+   * @secure
+   */
+  aiChatSessionControllerPostMessageImmediately = (id: number, data: PostMessageDto, params: RequestParams = {}) =>
+    this.http.request<ChatImmeVo, any>({
+      path: `/ai-chat-session/session/${id}/chat_imme`,
+      method: "POST",
       body: data,
       secure: true,
       type: ContentType.Json,

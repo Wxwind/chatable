@@ -20,6 +20,6 @@ export class ApiExceptionFilter implements ExceptionFilter {
     };
 
     this.logger.error(exception.message, exception.stack);
-    resp.status(HttpStatus.INTERNAL_SERVER_ERROR).json(body);
+    resp.status(HttpStatus.OK).json(body);
   }
 }

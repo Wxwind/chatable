@@ -23,6 +23,14 @@ export type GithubProfile = {
   };
 };
 
+export type GithubProfile2 = {
+  id: string;
+  // 用户名
+  login: string;
+  // 头像
+  avatar_url: string;
+};
+
 export type GithubPayLoad = {
   profile: GithubProfile;
   user: User | null;

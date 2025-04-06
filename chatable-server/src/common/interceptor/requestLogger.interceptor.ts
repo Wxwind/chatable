@@ -2,7 +2,7 @@ import { CallHandler, ExecutionContext, Inject, Injectable, LoggerService, NestI
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { getReqMainInfo } from './requestLogger.util';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 const CONTEXT_NAME = 'RequestLoggerInterceptor';
 
@@ -14,14 +14,21 @@ export class RequestLoggerInterceptor implements NestInterceptor {
     const ctx = context.switchToHttp();
     const req = ctx.getRequest<Request>();
     const reqInfo = getReqMainInfo(req);
-    this.loggerService.log(`request=[${JSON.stringify(reqInfo)}]`, CONTEXT_NAME);
+    this.loggerService.log({ type: 'request', ...reqInfo }, CONTEXT_NAME);
     const start = Date.now();
 
     return next.handle().pipe(
       tap((data) => {
         const end = Date.now();
         const duration = end - start;
-        this.loggerService.log(`response=[${JSON.stringify(data)}] duration=[${duration}ms]`, CONTEXT_NAME);
+        const resp = ctx.getResponse<Response>();
+        this.loggerService.log(
+          {
+            type: 'response',
+            duration,
+          },
+          CONTEXT_NAME
+        );
       }),
       catchError((error) => {
         const end = Date.now();

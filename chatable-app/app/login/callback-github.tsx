@@ -3,7 +3,7 @@ import { authService } from '@/services';
 import { useAuthContext } from '@/store';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { AutoView } from '@/components/core';
 
@@ -18,6 +18,7 @@ export default function LoginCallbackGitHub() {
     try {
       const code = params.code;
       console.log('code', code, params);
+      // 移动端会跳转回此页面
       // if (code) {
       //   authService.authControllerLoginByGithubCallback({ code, state: '' }).then((res) => {
       //     console.log('set token');
@@ -32,7 +33,11 @@ export default function LoginCallbackGitHub() {
       console.error((err as Error).message);
     }
   }, []);
-  return <AutoView style={styles.container}>登录中</AutoView>;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>登录中...</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -47,7 +52,6 @@ const styles = StyleSheet.create({
     rowGap: 32,
   },
   title: {
-    width: '100%',
     textAlign: 'center',
   },
 });

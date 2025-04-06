@@ -1,33 +1,31 @@
-import { AIChatMessage, AIChatMessageSender } from '@/ai-chat-message/ai-chat-message.entity';
 import { ErrorCode } from '@/common/api/errorCode';
 import { ApiException } from '@/common/apiException';
 import { EnvironmentVariables } from '@/config/type';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
-import {
-  ChatCompletionAssistantMessageParam,
-  ChatCompletionMessageParam,
-  ChatCompletionSystemMessageParam,
-  ChatCompletionUserMessageParam,
-} from 'openai/resources';
+import { ChatCompletionMessageParam } from 'openai/resources';
 import { Observable } from 'rxjs';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 @Injectable()
 export class OpenAIService {
   private client: OpenAI;
 
   constructor(private configService: ConfigService<EnvironmentVariables, true>) {
+    const proxy = configService.get('OPENAI_PROXY_URL', { infer: true });
+    const httpAgent = proxy ? new HttpsProxyAgent(proxy) : undefined;
     this.client = new OpenAI({
       apiKey: configService.get('OPEN_API_KEY', { infer: true }),
       baseURL: configService.get('OPENAI_BASE_URL', { infer: true }),
+      httpAgent: httpAgent,
     });
   }
 
-  async chat(messages: ChatCompletionMessageParam[]): Promise<string> {
+  async chat(model: string, messages: ChatCompletionMessageParam[]): Promise<string> {
     const chatCompletion = await this.client.chat.completions.create({
       messages,
-      model: 'deepseek-llm-67b',
+      model,
     });
 
     const response = chatCompletion.choices[0].message.content;
@@ -37,9 +35,9 @@ export class OpenAIService {
     return response;
   }
 
-  async chatStream(messages: ChatCompletionMessageParam[]): Promise<Observable<unknown>> {
+  async chatStream(model: string, messages: ChatCompletionMessageParam[]): Promise<Observable<unknown>> {
     const stream = await this.client.chat.completions.create({
-      model: 'deepseek-llm-67b',
+      model: model,
       messages,
       stream: true,
     });
@@ -61,13 +59,14 @@ export class OpenAIService {
     const chatCompletion = await this.client.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
-      max_tokens: 20,
+      max_completion_tokens: 20,
     });
 
     const response = chatCompletion.choices[0].message.content;
     if (response === null) {
       throw new ApiException(ErrorCode.OPENAI_NULL_RESPONSE);
     }
+
     return response;
   }
 }

@@ -1,5 +1,6 @@
 import { AIChatMessageBase } from '@/services/generated/data-contracts';
-import { View } from 'react-native';
+import { View, Text, StyleProp, ViewStyle } from 'react-native';
+import { MarkdownMessage } from './MarkdownMessage';
 
 interface MessageBubbleProps {
   message: string;
@@ -9,5 +10,16 @@ interface MessageBubbleProps {
 export function MessageBubble(props: MessageBubbleProps) {
   const { message, sender } = props;
 
-  return <View>{message} </View>;
+  const style: StyleProp<ViewStyle> =
+    sender === 'ai'
+      ? { backgroundColor: '#efefef' }
+      : {
+          backgroundColor: '#eff6ff',
+        };
+
+  return (
+    <View style={[style, { padding: 20, borderRadius: 10 }]}>
+      {sender === 'ai' ? <MarkdownMessage content={message} /> : <Text>{message}</Text>}
+    </View>
+  );
 }

@@ -35,7 +35,6 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log(`发送消息`, config);
     return config;
   },
   (error: any) => {
@@ -49,7 +48,6 @@ axiosInstance.interceptors.response.use(
   (response: AxiosResponse<ResponseInfo<any>>) => {
     const { code, msg } = response.data;
 
-    console.log(`收到消息`, response);
     if (code === 0) {
       return response;
     } else {
@@ -99,6 +97,6 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(new Error(message));
   }
 );

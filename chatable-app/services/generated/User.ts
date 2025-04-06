@@ -43,10 +43,11 @@ export class UserService<SecurityDataType = unknown> {
    * @secure
    */
   userControllerGetProfile = (params: RequestParams = {}) =>
-    this.http.request<any, GetProfileVo>({
+    this.http.request<GetProfileVo, any>({
       path: `/user/profile`,
       method: "GET",
       secure: true,
+      format: "json",
       ...params,
     });
 }

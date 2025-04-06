@@ -6,6 +6,7 @@ export default function LoginLayout() {
     <>
       <Stack>
         <Stack.Screen name="callback-github" options={{ headerShown: false }} />
+        <Stack.Screen name="register" options={{ headerShown: false }} />
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
     </>

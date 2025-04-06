@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { useImmer } from 'use-immer';
 import { useRequest } from 'ahooks';
 import { authService } from '@/services';
@@ -9,13 +9,9 @@ import { IconSymbol } from '@/components/IconSymbol';
 import AntDesignIcon from '@expo/vector-icons/AntDesign';
 import * as AuthSession from 'expo-auth-session';
 import { useAuthContext } from '@/store';
-import { useRouter } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import * as Crypto from 'expo-crypto';
-
-type LoginDto = {
-  account: string;
-  password: string;
-};
+import { LoginDto } from '@/services/generated/data-contracts';
 
 const clientId = process.env.EXPO_PUBLIC_GITHUB_CLIENT_ID;
 
@@ -77,6 +73,7 @@ export default function Login() {
         router.replace('/');
       } else if (result.type === 'error') {
         console.error(result.error);
+        router.replace('/login');
         return;
       }
     } catch (err) {
@@ -91,6 +88,7 @@ export default function Login() {
       </ThemedText>
 
       <Input
+        style={styles.input}
         placeholder="手机号/邮箱"
         value={loginDto.account}
         onChangeText={(value) => {
@@ -99,6 +97,7 @@ export default function Login() {
         onSubmitEditing={() => {}}
       />
       <Input
+        style={styles.input}
         prefix={<IconSymbol name="lock-outline" />}
         secureTextEntry
         placeholder="密码"
@@ -111,7 +110,7 @@ export default function Login() {
       <Button
         type="primary"
         loading={loading}
-        style={{ width: '100%' }}
+        style={{ width: '100%', height: 48 }}
         disabled={loading || !request}
         onPress={() => {
           run(loginDto);
@@ -119,6 +118,10 @@ export default function Login() {
       >
         登录
       </Button>
+
+      <Link href="/login/register" replace>
+        暂无账号？去注册
+      </Link>
 
       <TouchableOpacity onPress={handleLoginByGitHub}>
         <AntDesignIcon name="github" size={18}></AntDesignIcon>
@@ -141,5 +144,12 @@ const styles = StyleSheet.create({
   title: {
     width: '100%',
     textAlign: 'center',
+  },
+  input: {
+    borderRadius: 8,
+    borderColor: '#AFE8F0',
+    borderWidth: 1,
+    height: 48,
+    paddingHorizontal: 12,
   },
 });

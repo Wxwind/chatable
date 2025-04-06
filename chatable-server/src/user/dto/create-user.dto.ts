@@ -1,9 +1,10 @@
 import { UserThirdAuthPlatform } from '@/user-third-auth/user-third-auth.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsIn, IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty()
+  @IsIn(['phone', 'email'])
   @ApiProperty({
     enum: ['phone', 'email'],
   })

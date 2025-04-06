@@ -1,12 +1,12 @@
 import { LoginVo } from '@/auth/vo/login.vo';
 
-import { Controller, Post, UseGuards, Request, Get, Body, Req, Param } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Get, Body, Req, Param, Query } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UserService } from '@/user/user.service';
 import { CreateUserDto } from '@/user/dto/create-user.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LoginDto } from '@/auth/dto/login.dto';
-import { JwtPayLoad, RequestWithGithub } from './type';
+import { GithubProfile, GithubProfile2, JwtPayLoad, RequestWithGithub } from './type';
 import { ApiBearerAuth, ApiOAuth2, ApiOkResponse, ApiQuery } from '@nestjs/swagger';
 import { ApiException } from '@/common/apiException';
 import { ErrorCode } from '@/common/api/errorCode';
@@ -14,16 +14,22 @@ import { AccountType, getAccountType } from '@/utils/getAccountType';
 import { AuthGuard } from '@nestjs/passport';
 import { UserJWT } from '@/decorator';
 import { GithubLoginCallbackQuery } from './dto/github-login-callback.query';
+import { User } from '@/user/user.entity';
+import { UserThirdAuth } from '@/user-third-auth/user-third-auth.entity';
+import { UserThirdAuthService } from '@/user-third-auth/user-third-auth.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private userService: UserService
+    private userThirdService: UserThirdAuthService,
+    private userService: UserService,
+    private configService: ConfigService
   ) {}
 
   @Post('github/login')
-  @UseGuards(AuthGuard('github'))
+  //  @UseGuards(AuthGuard('github'))
   @ApiOAuth2(['read:user'])
   async loginByGithub() {
     // 跳转到github登录
@@ -33,8 +39,45 @@ export class AuthController {
   @UseGuards(AuthGuard('github'))
   @ApiQuery({ type: GithubLoginCallbackQuery })
   @ApiOkResponse({ type: LoginVo })
-  async loginByGithubCallback(@Req() req: RequestWithGithub): Promise<LoginVo> {
+  async loginByGithubCallback(@Req() req: RequestWithGithub, @Query() query: { code: string; state: string }): Promise<LoginVo> {
+    // const clientID = this.configService.get('OAUTH_GITHUB_CLIENT_ID', { infer: true })!;
+    // const clientSecret = this.configService.get('OAUTH_GITHUB_CLIENT_SECRET')!;
+    // const callbackURL = this.configService.get('OAUTH_GITHUB_CALLBACK_URL')!;
+    // console.log('code', query.code);
+    // const a = (await (
+    //   await fetch('https://github.com/login/oauth/access_token', {
+    //     method: 'post',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({
+    //       client_id: clientID,
+    //       client_secret: clientSecret,
+    //       code: query.code,
+    //       redirect_uri: callbackURL,
+    //     }),
+    //   })
+    // ).json()) as {
+    //   access_token: string;
+    //   scope: string;
+    //   token_type: string;
+    // };
+
+    // const b = await (
+    //   await fetch('https://api.github.com/user', {
+    //     method: 'get',
+    //     headers: {
+    //       Authorization: `Bearer ${a.access_token}`,
+    //     },
+    //   })
+    // ).json();
+
+    // console.log('github 返回', b);
+
+    //  const profile = b as GithubProfile2;
+    // const user = await this.userThirdService.findByGitHubId(profile.id);
     const { user, profile } = req.user;
+
     // 如果不存在则创建
     if (user === null) {
       const savedUser = await this.authService.findOrCreateUserByGitHub({
@@ -90,7 +133,13 @@ export class AuthController {
   @Post('register')
   @ApiOkResponse()
   async register(@Body() body: CreateUserDto): Promise<null> {
-    const user = await this.userService.create(body);
+    const userLike: Partial<User> = { username: body.username, password: body.password };
+    if (body.type === 'email') {
+      userLike.email = body.account;
+    } else if (body.type === 'phone') {
+      userLike.phone = body.account;
+    }
+    const user = await this.userService.create(userLike);
     return null;
   }
 }

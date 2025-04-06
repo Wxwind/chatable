@@ -17,7 +17,7 @@ export class User {
   @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatar: string;
 
   @Column({ length: 60, nullable: true })

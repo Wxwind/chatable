@@ -49,6 +49,11 @@ export interface PostMessageDto {
   message: string;
 }
 
+export interface ChatImmeVo {
+  messageId: number;
+  response: string;
+}
+
 export interface GetMessagesDto {
   sessionId: number;
   page: number;
@@ -56,6 +61,7 @@ export interface GetMessagesDto {
 }
 
 export interface AIChatMessageBase {
+  id: number;
   sender: "user" | "ai" | "system";
   message: string;
 }
