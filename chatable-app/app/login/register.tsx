@@ -31,6 +31,7 @@ export default function Login() {
       <ThemedText type="title">Chatable</ThemedText>
 
       <Input
+        style={styles.input}
         placeholder="手机号/邮箱"
         value={registerDto.account}
         onChangeText={(value) => {
@@ -39,6 +40,7 @@ export default function Login() {
         onSubmitEditing={() => {}}
       />
       <Input
+        style={styles.input}
         placeholder="用户名"
         value={registerDto.username}
         onChangeText={(value) => {
@@ -47,6 +49,7 @@ export default function Login() {
         onSubmitEditing={() => {}}
       />
       <Input
+        style={styles.input}
         prefix={<IconSymbol name="lock-outline" />}
         secureTextEntry
         placeholder="密码"
@@ -88,5 +91,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     columnGap: 4,
     rowGap: 32,
+  },
+  input: {
+    borderRadius: 8,
+    borderColor: '#AFE8F0',
+    borderWidth: 1,
+    height: 48,
+    paddingHorizontal: 12,
   },
 });

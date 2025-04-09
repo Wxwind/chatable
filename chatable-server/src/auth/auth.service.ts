@@ -25,8 +25,8 @@ export class AuthService {
     return null;
   }
 
-  async validateUserByEmail(phone: string, password: string): Promise<User | null> {
-    const user = await this.userService.findByEmail(phone);
+  async validateUserByEmail(email: string, password: string): Promise<User | null> {
+    const user = await this.userService.findByEmail(email);
 
     if (user && (await CryptoUtils.compare(password, user.password))) {
       return user;
